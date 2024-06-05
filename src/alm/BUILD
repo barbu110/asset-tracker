@@ -11,7 +11,15 @@ go_binary(
 
 go_library(
     name = "alm_lib",
-    srcs = ["main.go"],
-    importpath = "github.com/barbu110/asset-tracker/src/alm",
+    srcs = [
+        "asset.go",
+        "main.go",
+    ],
+    importpath = "asset-tracker/src/alm",
     visibility = ["//visibility:private"],
+    deps = [
+        "//src/alm/cmd",
+        "@com_github_ajstarks_svgo//:svgo",
+        "@com_github_google_uuid//:uuid",
+    ],
 )

@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "asset-tracker/src/alm/cmd"
 
 func main() {
-	fmt.Println("Hello")
+	cmd.Execute()
 }

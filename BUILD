@@ -19,5 +19,4 @@ buildifier(
     mode = "fix",
 )
 
-# gazelle:prefix github.com/barbu110/asset-tracker
 gazelle(name = "gazelle")
