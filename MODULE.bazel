@@ -9,7 +9,7 @@ bazel_dep(name = "rules_go", version = "0.48.0")
 bazel_dep(name = "gazelle", version = "0.37.0")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download(version = "1.20.3")
+go_sdk.download(version = "1.22.4")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
@@ -21,4 +21,5 @@ use_repo(
     "org_golang_x_sys",
     "com_github_boombuler_barcode",
     "com_github_vincent_petithory_dataurl",
+    "com_github_tdewolff_canvas",
 )

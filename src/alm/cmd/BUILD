@@ -9,8 +9,8 @@ go_library(
     importpath = "asset-tracker/src/alm/cmd",
     visibility = ["//visibility:public"],
     deps = [
-        "//src/alm/asset",
         "//src/alm/label",
+        "//src/core/asset",
         "@com_github_spf13_cobra//:cobra",
     ],
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-const IdSize = 8
+const IdSize = 16
 
 type Id []byte
 

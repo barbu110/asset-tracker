@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"asset-tracker/src/alm/asset"
 	"asset-tracker/src/alm/label"
+	"asset-tracker/src/core/asset"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -13,6 +13,7 @@ var renderDescription string
 var renderWidth int
 var renderHeight int
 var renderOutputPath string
+var renderPng bool
 
 var renderCommand = &cobra.Command{
 	Use:   "render",
@@ -29,12 +30,23 @@ var renderCommand = &cobra.Command{
 		}()
 
 		a := asset.New(renderName, renderDescription)
-		renderedLabel, err := label.Render(&a, label.Params{
+		renderParams := label.Params{
 			Width:              renderWidth,
 			Height:             renderHeight,
 			Padding:            10,
 			UseWhiteBackground: true,
-		})
+		}
+
+		render := func() ([]byte, error) {
+			if renderPng {
+				fmt.Printf("Rendering label as PNG.\n")
+				return label.RenderRaster(&a, renderParams)
+			} else {
+				fmt.Printf("Rendering label as SVG.\n")
+				return label.RenderVector(&a, renderParams)
+			}
+		}
+		renderedLabel, err := render()
 		if err != nil {
 			return fmt.Errorf("failed to render label: %w", err)
 		}

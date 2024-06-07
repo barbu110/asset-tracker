@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "0b412ad62b4d5762ffdbd98be37be164d286363a217c20f2fd7f86cf76880ca8",
+  "moduleFileHash": "e8192a03be7277e599358c98a2d5a8cf4e8d85b891525ad2e753fceab8981930",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -39,7 +39,7 @@
             {
               "tagName": "download",
               "attributeValues": {
-                "version": "1.20.3"
+                "version": "1.22.4"
               },
               "devDependency": false,
               "location": {
@@ -67,7 +67,8 @@
             "com_github_spf13_cobra": "com_github_spf13_cobra",
             "org_golang_x_sys": "org_golang_x_sys",
             "com_github_boombuler_barcode": "com_github_boombuler_barcode",
-            "com_github_vincent_petithory_dataurl": "com_github_vincent_petithory_dataurl"
+            "com_github_vincent_petithory_dataurl": "com_github_vincent_petithory_dataurl",
+            "com_github_tdewolff_canvas": "com_github_tdewolff_canvas"
           },
           "devImports": [],
           "tags": [

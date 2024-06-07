@@ -32,5 +32,7 @@ func init() {
 	_ = renderCommand.MarkFlagRequired("output-path")
 	_ = renderCommand.MarkFlagFilename("output-path")
 
+	renderCommand.Flags().BoolVar(&renderPng, "png", false, "When passed, label is rendered to PNG.")
+
 	rootCommand.AddCommand(renderCommand)
 }

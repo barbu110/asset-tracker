@@ -1,19 +1,20 @@
 package label
 
 import (
-	"asset-tracker/src/alm/asset"
+	"asset-tracker/src/core/asset"
 	"bytes"
-	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	svg "github.com/ajstarks/svgo"
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/datamatrix"
 	"github.com/vincent-petithory/dataurl"
 	"image/png"
+	"io"
 )
 
 const (
-	FontFamily    = "Courier"
+	FontFamily    = "Courier New"
 	FontSize      = 28
 	SmallFontSize = 24
 )
@@ -25,9 +26,14 @@ type Params struct {
 	UseWhiteBackground bool
 }
 
-func Render(a *asset.Asset, params Params) (data []byte, err error) {
+func RenderVector(a *asset.Asset, params Params) (data []byte, err error) {
 	buffer := bytes.Buffer{}
-	canvas := svg.New(&buffer)
+	err = renderToWriter(&buffer, a, params)
+	return buffer.Bytes(), err
+}
+
+func renderToWriter(w io.Writer, a *asset.Asset, params Params) (err error) {
+	canvas := svg.New(w)
 
 	canvas.Start(params.Width, params.Height)
 	if params.UseWhiteBackground {
@@ -36,15 +42,13 @@ func Render(a *asset.Asset, params Params) (data []byte, err error) {
 	renderText(canvas, a.Name, boldTextParams(params.Padding, params.Padding))
 	renderText(canvas, a.Description, defaultTextParams(params.Padding, params.Padding+FontSize+params.Padding/2.))
 
-	const BarcodeSize = 160
+	const BarcodeSize = 200
 
 	idData, _ := a.Id.MarshalBinary()
-	idBase64 := base64.StdEncoding.EncodeToString(idData)
-	idY := params.Height - params.Padding - SmallFontSize
-	renderText(canvas, idBase64, smallTextParams(params.Padding, idY))
+	idHex := hex.EncodeToString(idData)
 
-	bcY := params.Height - params.Padding - BarcodeSize - SmallFontSize - params.Padding
-	bcUri, e := renderBarcode(canvas, idBase64, &renderBarcodeParams{params.Padding, bcY, BarcodeSize})
+	bcY := params.Height - params.Padding - BarcodeSize
+	bcUri, e := renderBarcode(canvas, idHex, &renderBarcodeParams{params.Padding, bcY, BarcodeSize})
 	if e != nil {
 		err = fmt.Errorf("failed to render barcode: %w", e)
 		return
@@ -52,9 +56,12 @@ func Render(a *asset.Asset, params Params) (data []byte, err error) {
 
 	canvas.Image(params.Padding, bcY, BarcodeSize, BarcodeSize, bcUri)
 
-	canvas.End()
+	for i, group := range splitIdInGroups(idHex, 8) {
+		x, y := group[:4], group[4:]
+		renderText(canvas, fmt.Sprintf("%v %v", x, y), defaultTextParams(2*params.Padding+BarcodeSize, bcY+i*(SmallFontSize+params.Padding)))
+	}
 
-	data = buffer.Bytes()
+	canvas.End()
 	return
 }
 
@@ -128,6 +135,5 @@ func renderBarcode(canvas *svg.SVG, content string, params *renderBarcodeParams)
 	}
 
 	uri = dataurl.EncodeBytes(buf.Bytes())
-	fmt.Println(uri)
 	return
 }
