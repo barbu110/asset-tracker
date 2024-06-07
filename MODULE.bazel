@@ -18,4 +18,7 @@ use_repo(
     "com_github_ajstarks_svgo",
     "com_github_google_uuid",
     "com_github_spf13_cobra",
+    "org_golang_x_sys",
+    "com_github_boombuler_barcode",
+    "com_github_vincent_petithory_dataurl",
 )

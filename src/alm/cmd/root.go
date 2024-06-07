@@ -20,8 +20,17 @@ func Execute() {
 }
 
 func init() {
+	renderCommand.Flags().StringVarP(&renderName, "name", "n", "", "Name of the asset.")
+	_ = renderCommand.MarkFlagRequired("name")
+	renderCommand.Flags().StringVarP(&renderDescription, "description", "d", "", "One-line description of the asset.")
+	_ = renderCommand.MarkFlagRequired("description")
+
 	renderCommand.Flags().IntVar(&renderWidth, "width", 400, "Width of the label, in pixels.")
 	renderCommand.Flags().IntVar(&renderHeight, "height", 300, "Height of the label, in pixels.")
+
+	renderCommand.Flags().StringVarP(&renderOutputPath, "output-path", "o", "", "Path to output the rendered label.")
+	_ = renderCommand.MarkFlagRequired("output-path")
+	_ = renderCommand.MarkFlagFilename("output-path")
 
 	rootCommand.AddCommand(renderCommand)
 }
