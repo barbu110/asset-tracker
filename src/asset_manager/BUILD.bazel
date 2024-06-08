@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "asset_manager",
+    srcs = ["db_csv.go"],
+    importpath = "asset-tracker/src/asset_manager",
+    visibility = ["//visibility:public"],
+    deps = ["//src/core/asset"],
+)

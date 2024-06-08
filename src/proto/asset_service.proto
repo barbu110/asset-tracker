@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "asset-tracker/src/proto";
+
+service Asset {
+  rpc CreateAsset(CreateAssetRequest) returns (CreateAssetResponse);
+}
+
+message AssetObject {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated AssetAttribute attributes = 4;
+}
+
+message AssetAttribute {
+  string name = 1;
+  string description = 2;
+}
+
+message CreateAssetRequest {
+  string name = 1;
+  string description = 2;
+  repeated AssetAttribute attributes = 3;
+}
+
+message CreateAssetResponse {
+  AssetObject asset = 1;
+}

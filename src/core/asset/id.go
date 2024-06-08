@@ -2,6 +2,8 @@ package asset
 
 import (
 	"crypto/rand"
+	"encoding"
+	"encoding/hex"
 	"fmt"
 )
 
@@ -20,4 +22,13 @@ func RandomId() Id {
 	}
 
 	return buf
+}
+
+func parseId(id string) (Id, error) {
+	return hex.DecodeString(id)
+}
+
+func EncodeIdToString(id encoding.BinaryMarshaler) string {
+	b, _ := id.MarshalBinary()
+	return hex.EncodeToString(b)
 }

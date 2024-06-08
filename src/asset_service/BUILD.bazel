@@ -1,0 +1,30 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "asset_service_lib",
+    srcs = [
+        "main.go",
+        "server.go",
+    ],
+    importpath = "asset-tracker/src/asset_service",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//src/core/asset",
+        "//src/proto:asset_service_go_proto",
+        "@com_github_aws_aws_sdk_go_v2//aws",
+        "@com_github_aws_aws_sdk_go_v2_config//:config",
+        "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//status",
+        "@org_uber_go_zap//:zap",
+    ],
+)
+
+go_binary(
+    name = "asset_service",
+    embed = [":asset_service_lib"],
+    visibility = ["//visibility:public"],
+)

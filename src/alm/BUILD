@@ -16,3 +16,15 @@ go_library(
     visibility = ["//visibility:private"],
     deps = ["//src/alm/cmd"],
 )
+
+sh_binary(
+    name = "create_asset",
+    srcs = ["create_asset.sh"],
+    data = [
+        ":alm",
+    ],
+    env = {
+        "ALM_EXEC": "$(location :alm)",
+    },
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

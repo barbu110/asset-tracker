@@ -1,0 +1,16 @@
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "asset_service_proto",
+    srcs = ["asset_service.proto"],
+)
+
+go_proto_library(
+    name = "asset_service_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "asset-tracker/src/proto",
+    protos = [":asset_service_proto"],
+)
