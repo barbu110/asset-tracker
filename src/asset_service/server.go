@@ -1,38 +1,41 @@
 package main
 
 import (
+	"asset-tracker/src/asset_manager"
 	"asset-tracker/src/core/asset"
-	"asset-tracker/src/proto"
+	"asset-tracker/src/proto/asset_common"
+	"asset-tracker/src/proto/asset_service"
 	"context"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type assetServer struct {
-	Logger          *zap.Logger
-	DynamoDBClient  *dynamodb.Client
-	AssetsTableName string
+	Logger       *zap.Logger
+	AssetManager asset_manager.AssetManager
 }
 
-func (server *assetServer) CreateAsset(ctx context.Context, request *proto.CreateAssetRequest) (*proto.CreateAssetResponse, error) {
-	// TODO: Include the custom properties there.
-	a := asset.New(request.GetName(), request.GetDescription())
+const (
+	NameLenMin        = 3
+	NameLenMax        = 24
+	DescriptionLenMin = 3
+	DescriptionLenMax = 24
+)
 
-	item, err := attributevalue.MarshalMap(a)
-	if err != nil {
-		server.Logger.Error("Failed to serialize asset.")
-		return nil, status.Errorf(codes.Internal, "Internal service error.")
+func (server *assetServer) CreateAsset(ctx context.Context, request *asset_service.CreateAssetRequest) (*asset_service.CreateAssetResponse, error) {
+	if l := len(request.GetName()); l < NameLenMin || l > NameLenMax {
+		return nil, status.Errorf(codes.InvalidArgument, "Asset name must contain between %v and %v characters.",
+			NameLenMin, NameLenMax)
+	}
+	if l := len(request.GetDescription()); l < DescriptionLenMin || l > DescriptionLenMax {
+		return nil, status.Errorf(codes.InvalidArgument, "Asset description contain between %v and %v characters.",
+			DescriptionLenMin, DescriptionLenMax)
 	}
 
-	_, err = server.DynamoDBClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String(server.AssetsTableName),
-		Item:      item,
-	})
-	if err != nil {
+	// TODO: Include the custom properties there.
+	a := asset.New(request.GetName(), request.GetDescription())
+	if err := server.AssetManager.CreateAsset(a); err != nil {
 		assetIdBytes, _ := a.Id.MarshalBinary()
 		server.Logger.Error(
 			"Failed to write asset to datastore.",
@@ -42,12 +45,12 @@ func (server *assetServer) CreateAsset(ctx context.Context, request *proto.Creat
 		return nil, status.Errorf(codes.Internal, "Internal service error.")
 	}
 
-	return &proto.CreateAssetResponse{
-		Asset: &proto.AssetObject{
+	return &asset_service.CreateAssetResponse{
+		Asset: &asset_common.AssetObject{
 			Id:          asset.EncodeIdToString(a.Id),
 			Name:        a.Name,
 			Description: a.Description,
-			Attributes:  []*proto.AssetAttribute{},
+			Attributes:  []*asset_common.AssetAttribute{},
 		},
 	}, nil
 }

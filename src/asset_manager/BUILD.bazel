@@ -2,8 +2,20 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "asset_manager",
-    srcs = ["db_csv.go"],
+    srcs = [
+        "base.go",
+        "db_csv.go",
+        "ddb_asset_manager.go",
+        "paginated_data.go",
+    ],
     importpath = "asset-tracker/src/asset_manager",
     visibility = ["//visibility:public"],
-    deps = ["//src/core/asset"],
+    deps = [
+        "//src/core/asset",
+        "@com_github_aws_aws_sdk_go_v2//aws",
+        "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//types",
+        "@org_uber_go_zap//:zap",
+    ],
 )

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"asset-tracker/src/proto"
+	"asset-tracker/src/asset_manager"
+	"asset-tracker/src/proto/asset_service"
 	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -22,19 +23,28 @@ func main() {
 	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 8000))
+	address := fmt.Sprintf("localhost:%d", 8000)
+	logger.Info("Starting TCP listener", zap.String("address", address))
+
+	lis, err := net.Listen("tcp", address)
 	if err != nil {
 		logger.Error("Could not start TCP listener.", zap.Error(err))
 	}
 
 	srv := assetServer{
-		Logger:          logger,
-		DynamoDBClient:  dynamodbClient,
-		AssetsTableName: "asset-manager-assets",
+		Logger: logger,
+		AssetManager: &asset_manager.DynamoDB{
+			Client:    dynamodbClient,
+			TableName: "asset-manager-assets",
+			Logger:    logger.Named("AssetManager"),
+		},
 	}
 	grpcServer := grpc.NewServer()
-	proto.RegisterAssetServer(grpcServer, &srv)
+	asset_service.RegisterAssetServer(grpcServer, &srv)
 	reflection.Register(grpcServer)
+
+	logger.Info("Registered AssetService onto the GRPC server.")
+
 	if err := grpcServer.Serve(lis); err != nil {
 		logger.Error("Could not start GRPC server.", zap.Error(err))
 	}
