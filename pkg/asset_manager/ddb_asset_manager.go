@@ -3,7 +3,6 @@ package asset_manager
 import (
 	"asset-tracker/pkg/core/asset"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -53,7 +52,7 @@ func (d *DynamoDB) GetAsset(id *asset.Id) (*asset.Asset, error) {
 		return nil, fmt.Errorf("GetItem failed: %w", err)
 	}
 	if o.Item == nil {
-		return nil, errors.New("item not found")
+		return nil, ErrAssetNotFound
 	}
 
 	var a asset.Asset

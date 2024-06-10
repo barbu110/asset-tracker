@@ -1,12 +1,11 @@
 package asset
 
 import (
-	"encoding"
 	"fmt"
 )
 
 type Asset struct {
-	Id          encoding.BinaryMarshaler
+	Id          Id
 	Name        string
 	Description string
 	Properties  []CustomProperty
@@ -27,7 +26,7 @@ func New(name, description string, properties ...CustomProperty) Asset {
 }
 
 func FromExisting(id, name, description string, properties ...CustomProperty) (a Asset, err error) {
-	assetId, e := parseId(id)
+	assetId, e := ParseId(id)
 	if e != nil {
 		err = fmt.Errorf("invalid ID: %w", e)
 		return

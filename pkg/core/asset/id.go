@@ -24,7 +24,7 @@ func RandomId() Id {
 	return buf
 }
 
-func parseId(id string) (Id, error) {
+func ParseId(id string) (Id, error) {
 	return hex.DecodeString(id)
 }
 

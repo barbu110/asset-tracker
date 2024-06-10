@@ -7,6 +7,7 @@ option go_package = "asset-tracker/proto/asset_service";
 
 service Asset {
   rpc CreateAsset(CreateAssetRequest) returns (CreateAssetResponse);
+  rpc GetAsset(GetAssetRequest) returns (GetAssetResponse);
 }
 
 message CreateAssetRequest {
@@ -16,5 +17,13 @@ message CreateAssetRequest {
 }
 
 message CreateAssetResponse {
+  asset_tracker.asset_common.AssetObject asset = 1;
+}
+
+message GetAssetRequest {
+  string id = 1;
+}
+
+message GetAssetResponse {
   asset_tracker.asset_common.AssetObject asset = 1;
 }
