@@ -1,6 +1,6 @@
 package asset_manager
 
-import "asset-tracker/src/core/asset"
+import "asset-tracker/pkg/core/asset"
 
 type AssetManager interface {
 	CreateAsset(asset asset.Asset) error

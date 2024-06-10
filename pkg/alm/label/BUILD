@@ -11,10 +11,10 @@ go_library(
         ":data/fonts/CourierNew.ttf",
         ":data/fonts/CourierNewBold.ttf",
     ],
-    importpath = "asset-tracker/src/alm/label",
+    importpath = "asset-tracker/pkg/alm/label",
     visibility = ["//visibility:public"],
     deps = [
-        "//src/core/asset",
+        "//pkg/core/asset",
         "@com_github_ajstarks_svgo//:svgo",
         "@com_github_boombuler_barcode//:barcode",
         "@com_github_boombuler_barcode//datamatrix",

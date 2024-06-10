@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "proto/asset_common.proto";
+
+package asset_tracker.asset_service;
+option go_package = "asset-tracker/proto/asset_service";
+
+service Asset {
+  rpc CreateAsset(CreateAssetRequest) returns (CreateAssetResponse);
+}
+
+message CreateAssetRequest {
+  string name = 1;
+  string description = 2;
+  repeated asset_tracker.asset_common.AssetAttribute attributes = 3;
+}
+
+message CreateAssetResponse {
+  asset_tracker.asset_common.AssetObject asset = 1;
+}

@@ -1,7 +1,7 @@
 package label
 
 import (
-	"asset-tracker/src/core/asset"
+	"asset-tracker/pkg/core/asset"
 	"bytes"
 	"fmt"
 	"github.com/tdewolff/canvas"

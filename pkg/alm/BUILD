@@ -12,9 +12,9 @@ go_binary(
 go_library(
     name = "alm_lib",
     srcs = ["main.go"],
-    importpath = "asset-tracker/src/alm",
+    importpath = "asset-tracker/pkg/alm",
     visibility = ["//visibility:private"],
-    deps = ["//src/alm/cmd"],
+    deps = ["//pkg/alm/cmd"],
 )
 
 sh_binary(

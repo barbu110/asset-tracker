@@ -1,7 +1,7 @@
 package asset_manager
 
 import (
-	"asset-tracker/src/core/asset"
+	"asset-tracker/pkg/core/asset"
 	"encoding/csv"
 	"fmt"
 	"io"

@@ -8,10 +8,10 @@ go_library(
         "ddb_asset_manager.go",
         "paginated_data.go",
     ],
-    importpath = "asset-tracker/src/asset_manager",
+    importpath = "asset-tracker/pkg/asset_manager",
     visibility = ["//visibility:public"],
     deps = [
-        "//src/core/asset",
+        "//pkg/core/asset",
         "@com_github_aws_aws_sdk_go_v2//aws",
         "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
         "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",

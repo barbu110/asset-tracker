@@ -6,6 +6,6 @@ go_library(
         "asset.go",
         "id.go",
     ],
-    importpath = "asset-tracker/src/core/asset",
+    importpath = "asset-tracker/pkg/core/asset",
     visibility = ["//visibility:public"],
 )

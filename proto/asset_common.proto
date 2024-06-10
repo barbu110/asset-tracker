@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package asset_tracker.src.proto.asset_common;
-option go_package = "asset-tracker/src/proto/asset_common";
+package asset_tracker.asset_common;
+option go_package = "asset-tracker/proto/asset_common";
 
 message AssetObject {
   string id = 1;

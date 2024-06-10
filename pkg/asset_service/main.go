@@ -1,8 +1,8 @@
 package main
 
 import (
-	"asset-tracker/src/asset_manager"
-	"asset-tracker/src/proto/asset_service"
+	"asset-tracker/pkg/asset_manager"
+	"asset-tracker/proto/asset_service"
 	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/config"

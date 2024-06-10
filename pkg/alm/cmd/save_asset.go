@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"asset-tracker/src/asset_manager"
-	"asset-tracker/src/core/asset"
+	"asset-tracker/pkg/asset_manager"
+	"asset-tracker/pkg/core/asset"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"

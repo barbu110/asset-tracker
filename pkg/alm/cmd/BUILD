@@ -7,12 +7,12 @@ go_library(
         "root.go",
         "save_asset.go",
     ],
-    importpath = "asset-tracker/src/alm/cmd",
+    importpath = "asset-tracker/pkg/alm/cmd",
     visibility = ["//visibility:public"],
     deps = [
-        "//src/alm/label",
-        "//src/asset_manager",
-        "//src/core/asset",
+        "//pkg/alm/label",
+        "//pkg/asset_manager",
+        "//pkg/core/asset",
         "@com_github_spf13_cobra//:cobra",
     ],
 )

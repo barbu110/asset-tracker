@@ -16,14 +16,14 @@ proto_library(
 
 go_proto_library(
     name = "asset_common_go_proto",
-    importpath = "asset-tracker/src/proto/asset_common",
+    importpath = "asset-tracker/proto/asset_common",
     protos = [":asset_common_proto"],
 )
 
 go_proto_library(
     name = "asset_service_go_proto",
     compilers = ["@rules_go//proto:go_grpc"],
-    importpath = "asset-tracker/src/proto/asset_service",
+    importpath = "asset-tracker/proto/asset_service",
     protos = [":asset_service_proto"],
     deps = [":asset_common_go_proto"],
 )

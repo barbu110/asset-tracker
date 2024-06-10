@@ -1,6 +1,6 @@
 package main
 
-import "asset-tracker/src/alm/cmd"
+import "asset-tracker/pkg/alm/cmd"
 
 func main() {
 	cmd.Execute()

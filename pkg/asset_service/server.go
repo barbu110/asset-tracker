@@ -1,10 +1,10 @@
 package main
 
 import (
-	"asset-tracker/src/asset_manager"
-	"asset-tracker/src/core/asset"
-	"asset-tracker/src/proto/asset_common"
-	"asset-tracker/src/proto/asset_service"
+	"asset-tracker/pkg/asset_manager"
+	"asset-tracker/pkg/core/asset"
+	"asset-tracker/proto/asset_common"
+	"asset-tracker/proto/asset_service"
 	"context"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
