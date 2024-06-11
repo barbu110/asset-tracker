@@ -1,0 +1,22 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "next_token",
+    srcs = [
+        "encryption_engine.go",
+        "encryption_key_source.go",
+        "env_key_source.go",
+        "next_token.go",
+    ],
+    importpath = "asset-tracker/pkg/pagination/next_token",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "next_token_test",
+    srcs = [
+        "encryption_engine_test.go",
+        "env_key_source_test.go",
+    ],
+    embed = [":next_token"],
+)

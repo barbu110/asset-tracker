@@ -2,17 +2,21 @@ package asset_manager
 
 import (
 	"asset-tracker/pkg/core/asset"
+	"asset-tracker/pkg/pagination"
 	"errors"
 )
 
 var (
-	ErrAssetNotFound = errAssetNotFound()
+	ErrAssetNotFound    = errors.New("asset not found")
+	ErrInvalidNextToken = errors.New("invalid next token")
 )
+
+const ListAssetsDefaultMaxItems uint64 = 100
 
 type AssetManager interface {
 	CreateAsset(asset asset.Asset) error
-	GetAsset(id *asset.Id) (a *asset.Asset, err error)
-	ListAssets(params *ListAssetsParams) (data PaginatedData[asset.Asset], err error)
+	GetAsset(id *asset.Id) (*asset.Asset, error)
+	ListAssets(params *ListAssetsParams) (data pagination.PaginatedData[asset.Asset], err error)
 }
 
 type ListAssetsParams struct {
@@ -21,6 +25,10 @@ type ListAssetsParams struct {
 	HasNextToken bool
 }
 
-func errAssetNotFound() error {
-	return errors.New("asset not found")
+func (p *ListAssetsParams) GetMaxItems() uint64 {
+	if p.MaxItems == 0 {
+		return ListAssetsDefaultMaxItems
+	} else {
+		return p.MaxItems
+	}
 }

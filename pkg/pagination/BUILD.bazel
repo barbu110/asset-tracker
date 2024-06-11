@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pagination",
+    srcs = ["paginated_data.go"],
+    importpath = "asset-tracker/pkg/pagination",
+    visibility = ["//visibility:public"],
+)

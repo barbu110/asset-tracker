@@ -5,17 +5,17 @@ go_library(
     srcs = [
         "base.go",
         "db_csv.go",
-        "ddb_asset_manager.go",
-        "paginated_data.go",
+        "ddb.go",
     ],
     importpath = "asset-tracker/pkg/asset_manager",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/core/asset",
+        "//pkg/pagination",
+        "//pkg/pagination/next_token",
         "@com_github_aws_aws_sdk_go_v2//aws",
         "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
         "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",
         "@com_github_aws_aws_sdk_go_v2_service_dynamodb//types",
-        "@org_uber_go_zap//:zap",
     ],
 )

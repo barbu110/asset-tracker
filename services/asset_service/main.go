@@ -2,6 +2,7 @@ package main
 
 import (
 	"asset-tracker/pkg/asset_manager"
+	"asset-tracker/pkg/pagination/next_token"
 	"asset-tracker/proto/asset_service"
 	"context"
 	"fmt"
@@ -36,7 +37,9 @@ func main() {
 		AssetManager: &asset_manager.DynamoDB{
 			Client:    dynamodbClient,
 			TableName: "asset-manager-assets",
-			Logger:    logger.Named("AssetManager"),
+			NextTokenEncryptionEngine: next_token.EncryptionEngine{
+				KeySource: &next_token.EnvironmentKeySource{VariableName: "NEXT_TOKEN_KEY"},
+			},
 		},
 	}
 	grpcServer := grpc.NewServer()

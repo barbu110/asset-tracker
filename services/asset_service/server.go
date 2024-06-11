@@ -7,6 +7,7 @@ import (
 	"asset-tracker/proto/asset_service"
 	"context"
 	"errors"
+	"github.com/golang/protobuf/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -80,5 +81,43 @@ func (s *assetServer) GetAsset(ctx context.Context, request *asset_service.GetAs
 			Description: a.Description,
 			Attributes:  []*asset_common.AssetAttribute{},
 		},
+	}, nil
+}
+
+func (s *assetServer) ListAssets(ctx context.Context, request *asset_service.ListAssetsRequest) (*asset_service.ListAssetsResponse, error) {
+	var nextToken string
+	if request.NextToken != nil {
+		nextToken = *request.NextToken
+	}
+
+	r, err := s.AssetManager.ListAssets(&asset_manager.ListAssetsParams{
+		MaxItems:     request.MaxItems,
+		NextToken:    nextToken,
+		HasNextToken: request.NextToken != nil,
+	})
+	if err != nil {
+		s.Logger.Error("Failed to list assets.", zap.Error(err))
+		return nil, status.Error(codes.Internal, MsgInternalServiceError)
+	}
+
+	assets := make([]*asset_common.AssetObject, len(r.Items))
+	for i, a := range r.Items {
+		assets[i] = &asset_common.AssetObject{
+			Id:          asset.EncodeIdToString(a.Id),
+			Name:        a.Name,
+			Description: a.Description,
+			// TODO: Handle attributes.
+			Attributes: nil,
+		}
+	}
+
+	var outputNextToken *string
+	if r.HasNextToken {
+		outputNextToken = proto.String(r.NextToken)
+	}
+
+	return &asset_service.ListAssetsResponse{
+		Assets:    assets,
+		NextToken: outputNextToken,
 	}, nil
 }
