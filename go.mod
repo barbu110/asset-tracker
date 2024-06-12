@@ -15,6 +15,8 @@ require (
 )
 
 require (
+	github.com/vmihailenco/msgpack/v5 v5.4.1
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect

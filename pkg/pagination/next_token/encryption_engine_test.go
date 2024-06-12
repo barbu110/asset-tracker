@@ -2,6 +2,7 @@ package next_token
 
 import (
 	"crypto/rand"
+	"reflect"
 	"testing"
 )
 
@@ -20,13 +21,13 @@ func TestEncryptionEngine_EncryptDecrypt(t *testing.T) {
 	ks := inMemoryKeySource{k}
 	engine := EncryptionEngine{KeySource: &ks}
 
-	token := engine.NewToken("this is a next token")
+	token := engine.NewToken([]byte("this is a next token"))
 	encrypted, err := engine.Encrypt(token)
 	if err != nil {
 		t.Errorf("could not encrypt")
 	}
 
-	t.Logf("Raw token: %v", []byte(token.Raw))
+	t.Logf("Raw token: %v", token.Raw)
 	t.Logf("Encrypted: %v", encrypted)
 
 	decrypted, err := engine.Decrypt(encrypted)
@@ -36,7 +37,7 @@ func TestEncryptionEngine_EncryptDecrypt(t *testing.T) {
 
 	t.Logf("Decrypted: %v", []byte(decrypted.Raw))
 
-	if decrypted.Raw != token.Raw {
+	if !reflect.DeepEqual(decrypted.Raw, token.Raw) {
 		t.Errorf("symmetry test failed")
 	}
 }
@@ -48,13 +49,13 @@ func TestEncryptionEngine_StringEncryptDecrypt(t *testing.T) {
 	ks := inMemoryKeySource{k}
 	engine := EncryptionEngine{KeySource: &ks}
 
-	token := engine.NewToken("this is a next token")
+	token := engine.NewToken([]byte("this is a next token"))
 	encrypted, err := engine.EncryptToString(token)
 	if err != nil {
 		t.Errorf("could not encrypt")
 	}
 
-	t.Logf("Raw token: %v", []byte(token.Raw))
+	t.Logf("Raw token: %v", token.Raw)
 	t.Logf("Encrypted: %v", encrypted)
 
 	decrypted, err := engine.DecryptFromString(encrypted)
@@ -64,7 +65,7 @@ func TestEncryptionEngine_StringEncryptDecrypt(t *testing.T) {
 
 	t.Logf("Decrypted: %v", []byte(decrypted.Raw))
 
-	if decrypted.Raw != token.Raw {
+	if !reflect.DeepEqual(decrypted.Raw, token.Raw) {
 		t.Errorf("symmetry test failed")
 	}
 }

@@ -40,6 +40,7 @@ func main() {
 			NextTokenEncryptionEngine: next_token.EncryptionEngine{
 				KeySource: &next_token.EnvironmentKeySource{VariableName: "NEXT_TOKEN_KEY"},
 			},
+			Logger: logger.Named("AssetManager"),
 		},
 	}
 	grpcServer := grpc.NewServer()

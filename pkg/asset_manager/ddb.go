@@ -5,19 +5,21 @@ import (
 	"asset-tracker/pkg/pagination"
 	"asset-tracker/pkg/pagination/next_token"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/vmihailenco/msgpack/v5"
+	"go.uber.org/zap"
 )
 
 type DynamoDB struct {
 	Client                    *dynamodb.Client
 	TableName                 string
 	NextTokenEncryptionEngine next_token.EncryptionEngine
+	Logger                    *zap.Logger
 }
 
 func assetKey(id *asset.Id) map[string]types.AttributeValue {
@@ -67,6 +69,11 @@ func (d *DynamoDB) GetAsset(id *asset.Id) (*asset.Asset, error) {
 func (d *DynamoDB) ListAssets(params *ListAssetsParams) (data pagination.PaginatedData[asset.Asset], err error) {
 	startKey, err := d.decodeStartKey(params.NextToken, params.HasNextToken)
 	if err != nil {
+		d.Logger.Debug(
+			"Could not parse the received NextToken.",
+			zap.String("NextToken", params.NextToken),
+			zap.Error(err),
+		)
 		return pagination.NewEmpty[asset.Asset](), ErrInvalidNextToken
 	}
 
@@ -92,6 +99,7 @@ func (d *DynamoDB) ListAssets(params *ListAssetsParams) (data pagination.Paginat
 	if err != nil {
 		return pagination.NewEmpty[asset.Asset](), errors.New("nextToken encoding failed")
 	}
+
 	return pagination.PaginatedData[asset.Asset]{
 		Items:        assets,
 		NextToken:    lastKey,
@@ -106,12 +114,18 @@ func (d *DynamoDB) decodeStartKey(raw string, isPresent bool) (map[string]types.
 
 	j, err := d.NextTokenEncryptionEngine.DecryptFromString(raw)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not decrypt token: %w", err)
 	}
 
-	m := make(map[string]types.AttributeValue)
-	if err := json.Unmarshal([]byte(j.Raw), &m); err != nil {
-		return nil, err
+	km := make(map[string]interface{})
+	if err := msgpack.Unmarshal(j.Raw, &km); err != nil {
+		d.Logger.Debug("Could not unmarshall decrypted token.", zap.ByteString("decryptedToken", j.Raw))
+		return nil, fmt.Errorf("could not unmarshall decrypted token: %w", err)
+	}
+
+	m, err := attributevalue.MarshalMap(km)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal AttributeValue map: %w", err)
 	}
 
 	return m, nil
@@ -125,13 +139,22 @@ func (d *DynamoDB) encodeLastKey(k map[string]types.AttributeValue) (encrypted s
 		return
 	}
 
-	m, err := json.Marshal(k)
-	if err != nil {
+	var km map[string]interface{}
+	if e := attributevalue.UnmarshalMap(k, &km); e != nil {
+		err = fmt.Errorf("unmarshal map failed: %w", e)
 		return
 	}
-
-	encrypted, err = d.NextTokenEncryptionEngine.EncryptToString(d.NextTokenEncryptionEngine.NewToken(string(m)))
+	fmt.Printf("got km = %v\n", km)
+	m, err := msgpack.Marshal(km)
 	if err != nil {
+		err = fmt.Errorf("could not marshal token map: %w", err)
+		return
+	}
+	fmt.Printf("got m = %v\n", string(m))
+
+	encrypted, err = d.NextTokenEncryptionEngine.EncryptToString(d.NextTokenEncryptionEngine.NewToken(m))
+	if err != nil {
+		err = fmt.Errorf("could not encrypt token: %w", err)
 		return
 	}
 

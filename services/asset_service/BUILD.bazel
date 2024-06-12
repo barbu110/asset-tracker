@@ -6,7 +6,7 @@ go_library(
         "main.go",
         "server.go",
     ],
-    importpath = "asset-tracker/pkg/asset_service",
+    importpath = "asset-tracker/services/asset_service",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/asset_manager",

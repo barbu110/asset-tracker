@@ -12,7 +12,7 @@ type EncryptionEngine struct {
 	KeySource EncryptionKeySource
 }
 
-func (e *EncryptionEngine) NewToken(raw string) NextToken {
+func (e *EncryptionEngine) NewToken(raw []byte) NextToken {
 	return NextToken{Raw: raw}
 }
 
@@ -66,7 +66,7 @@ func (e *EncryptionEngine) Decrypt(ciphertext []byte) (NextToken, error) {
 		return NextToken{}, fmt.Errorf("decryption failed: %w", err)
 	}
 
-	return e.NewToken(string(pt)), nil
+	return e.NewToken(pt), nil
 }
 
 func (e *EncryptionEngine) EncryptToString(token NextToken) (string, error) {
@@ -75,11 +75,11 @@ func (e *EncryptionEngine) EncryptToString(token NextToken) (string, error) {
 		return "", fmt.Errorf("encryption failed: %w", err)
 	}
 
-	return base64.StdEncoding.EncodeToString(b), nil
+	return base64.RawStdEncoding.EncodeToString(b), nil
 }
 
 func (e *EncryptionEngine) DecryptFromString(s string) (NextToken, error) {
-	b, err := base64.StdEncoding.DecodeString(s)
+	b, err := base64.RawStdEncoding.DecodeString(s)
 	if err != nil {
 		return NextToken{}, fmt.Errorf("base64 decode failed: %w", err)
 	}

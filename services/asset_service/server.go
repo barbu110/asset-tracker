@@ -96,6 +96,10 @@ func (s *assetServer) ListAssets(ctx context.Context, request *asset_service.Lis
 		HasNextToken: request.NextToken != nil,
 	})
 	if err != nil {
+		if errors.Is(err, asset_manager.ErrInvalidNextToken) {
+			return nil, status.Error(codes.InvalidArgument, "Provided nextToken is invalid.")
+		}
+
 		s.Logger.Error("Failed to list assets.", zap.Error(err))
 		return nil, status.Error(codes.Internal, MsgInternalServiceError)
 	}

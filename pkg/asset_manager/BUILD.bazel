@@ -17,5 +17,7 @@ go_library(
         "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
         "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",
         "@com_github_aws_aws_sdk_go_v2_service_dynamodb//types",
+        "@com_github_vmihailenco_msgpack_v5//:msgpack",
+        "@org_uber_go_zap//:zap",
     ],
 )
