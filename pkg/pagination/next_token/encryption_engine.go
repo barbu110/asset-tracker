@@ -1,8 +1,9 @@
 package next_token
 
 import (
-	"bytes"
 	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"encoding/base64"
 	"fmt"
 )
@@ -21,15 +22,24 @@ func (e *EncryptionEngine) Encrypt(token NextToken) ([]byte, error) {
 		return nil, fmt.Errorf("key retrieval failed: %w", err)
 	}
 
-	c, err := aes.NewCipher(key)
+	aes, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, fmt.Errorf("cipher creation failed: %w", err)
 	}
 
-	out := bytes.Buffer{}
-	c.Encrypt(out.Bytes(), []byte(token.Raw))
+	gcm, err := cipher.NewGCM(aes)
+	if err != nil {
+		return nil, fmt.Errorf("gcm init failed: %w", err)
+	}
 
-	return out.Bytes(), nil
+	nonce := make([]byte, gcm.NonceSize())
+	_, err = rand.Read(nonce)
+	if err != nil {
+		return nil, fmt.Errorf("nonce creation failed: %w", err)
+	}
+
+	ciphertext := gcm.Seal(nonce, nonce, []byte(token.Raw), nil)
+	return ciphertext, nil
 }
 
 func (e *EncryptionEngine) Decrypt(ciphertext []byte) (NextToken, error) {
@@ -38,13 +48,23 @@ func (e *EncryptionEngine) Decrypt(ciphertext []byte) (NextToken, error) {
 		return NextToken{}, fmt.Errorf("key retrieval failed: %w", err)
 	}
 
-	c, err := aes.NewCipher(key)
+	aes, err := aes.NewCipher(key)
 	if err != nil {
 		return NextToken{}, fmt.Errorf("cipher creation failed: %w", err)
 	}
 
-	pt := make([]byte, len(ciphertext))
-	c.Decrypt(pt, ciphertext)
+	gcm, err := cipher.NewGCM(aes)
+	if err != nil {
+		return NextToken{}, fmt.Errorf("gcm init failed: %w", err)
+	}
+
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+
+	pt, err := gcm.Open(nil, []byte(nonce), []byte(ciphertext), nil)
+	if err != nil {
+		return NextToken{}, fmt.Errorf("decryption failed: %w", err)
+	}
 
 	return e.NewToken(string(pt)), nil
 }

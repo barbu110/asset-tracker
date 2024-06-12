@@ -1,3 +1,4 @@
 .idea
 bazel-*
 .ijwb
+.envrc
