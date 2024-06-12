@@ -118,9 +118,9 @@ func (d *DynamoDB) decodeStartKey(raw string, isPresent bool) (map[string]types.
 	}
 
 	km := make(map[string]interface{})
-	if err := msgpack.Unmarshal(j.Raw, &km); err != nil {
-		d.Logger.Debug("Could not unmarshall decrypted token.", zap.ByteString("decryptedToken", j.Raw))
-		return nil, fmt.Errorf("could not unmarshall decrypted token: %w", err)
+	if err := msgpack.Unmarshal(j.Bytes(), &km); err != nil {
+		d.Logger.Debug("Could not unmarshal decrypted token.", zap.ByteString("decryptedToken", j.Bytes()))
+		return nil, fmt.Errorf("could not unmarshal decrypted token: %w", err)
 	}
 
 	m, err := attributevalue.MarshalMap(km)

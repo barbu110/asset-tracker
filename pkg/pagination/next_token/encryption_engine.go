@@ -13,7 +13,7 @@ type EncryptionEngine struct {
 }
 
 func (e *EncryptionEngine) NewToken(raw []byte) NextToken {
-	return NextToken{Raw: raw}
+	return NextToken{raw: raw}
 }
 
 func (e *EncryptionEngine) Encrypt(token NextToken) ([]byte, error) {
@@ -38,7 +38,7 @@ func (e *EncryptionEngine) Encrypt(token NextToken) ([]byte, error) {
 		return nil, fmt.Errorf("nonce creation failed: %w", err)
 	}
 
-	ciphertext := gcm.Seal(nonce, nonce, []byte(token.Raw), nil)
+	ciphertext := gcm.Seal(nonce, nonce, []byte(token.raw), nil)
 	return ciphertext, nil
 }
 

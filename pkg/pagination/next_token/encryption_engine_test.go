@@ -27,7 +27,7 @@ func TestEncryptionEngine_EncryptDecrypt(t *testing.T) {
 		t.Errorf("could not encrypt")
 	}
 
-	t.Logf("Raw token: %v", token.Raw)
+	t.Logf("raw token: %v", token.raw)
 	t.Logf("Encrypted: %v", encrypted)
 
 	decrypted, err := engine.Decrypt(encrypted)
@@ -35,9 +35,9 @@ func TestEncryptionEngine_EncryptDecrypt(t *testing.T) {
 		t.Errorf("could not decrypt")
 	}
 
-	t.Logf("Decrypted: %v", []byte(decrypted.Raw))
+	t.Logf("Decrypted: %v", []byte(decrypted.raw))
 
-	if !reflect.DeepEqual(decrypted.Raw, token.Raw) {
+	if !reflect.DeepEqual(decrypted.raw, token.raw) {
 		t.Errorf("symmetry test failed")
 	}
 }
@@ -55,7 +55,7 @@ func TestEncryptionEngine_StringEncryptDecrypt(t *testing.T) {
 		t.Errorf("could not encrypt")
 	}
 
-	t.Logf("Raw token: %v", token.Raw)
+	t.Logf("raw token: %v", token.raw)
 	t.Logf("Encrypted: %v", encrypted)
 
 	decrypted, err := engine.DecryptFromString(encrypted)
@@ -63,9 +63,9 @@ func TestEncryptionEngine_StringEncryptDecrypt(t *testing.T) {
 		t.Errorf("could not decrypt")
 	}
 
-	t.Logf("Decrypted: %v", []byte(decrypted.Raw))
+	t.Logf("Decrypted: %v", []byte(decrypted.raw))
 
-	if !reflect.DeepEqual(decrypted.Raw, token.Raw) {
+	if !reflect.DeepEqual(decrypted.raw, token.raw) {
 		t.Errorf("symmetry test failed")
 	}
 }

@@ -1,5 +1,9 @@
 package next_token
 
 type NextToken struct {
-	Raw []byte
+	raw []byte
+}
+
+func (t *NextToken) Bytes() []byte {
+	return t.raw
 }
