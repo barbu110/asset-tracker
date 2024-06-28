@@ -82,6 +82,33 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//:bazel/external_deps.bzl%external_deps": {
+      "general": {
+        "bzlTransitiveDigest": "4dZ7kSqsClOmF87WW56W6Auscad6wJ7YbkeAIHWNoZY=",
+        "usagesDigest": "2MwgKVbeLr7LFXEp1GtFCy1QX7OGIxf3etQ3gSW0T8Y=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "libwebp": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:git.bzl",
+            "ruleClassName": "git_repository",
+            "attributes": {
+              "remote": "https://chromium.googlesource.com/webm/libwebp",
+              "commit": "9ce982fdf21764ef7b273f91d6d72721656c3e03",
+              "build_file": "@@//:bazel/libwebp/BUILD.bazel"
+            }
+          }
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "",
+            "bazel_tools",
+            "bazel_tools"
+          ]
+        ]
+      }
+    },
     "@@apple_support~//crosstool:setup.bzl%apple_cc_configure_extension": {
       "general": {
         "bzlTransitiveDigest": "PjIds3feoYE8SGbbIq2SFTZy3zmxeO2tQevJZNDo7iY=",

@@ -1,0 +1,20 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "configure_make")
+
+configure_make(
+    name = "libwebp",
+    autogen = True,
+    configure_in_place = True,
+    configure_options = [
+        "--disable-jpeg",
+        "--disable-tiff",
+        "--disable-gif",
+    ],
+    lib_source = "@libwebp//:srcs",
+    env = select({
+        "@platforms//os:macos": {
+            "AR": "/usr/bin/ar",
+        },
+        "//conditions:default": {},
+    }),
+    visibility = ["//visibility:public"],
+)
