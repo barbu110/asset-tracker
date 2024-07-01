@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = ["root.go"],
+    importpath = "asset-tracker/services/label_service/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/label/renderer",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_spf13_viper//:viper",
+        "@org_uber_go_zap//:zap",
+    ],
+)

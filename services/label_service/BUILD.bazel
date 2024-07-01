@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "label_service_lib",
+    srcs = ["main.go"],
+    importpath = "asset-tracker/services/label_service",
+    visibility = ["//visibility:private"],
+    deps = ["//services/label_service/cmd"],
+)
+
+go_binary(
+    name = "label_service",
+    embed = [":label_service_lib"],
+    visibility = ["//visibility:public"],
+)

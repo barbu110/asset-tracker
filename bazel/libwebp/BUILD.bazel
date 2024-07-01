@@ -12,22 +12,3 @@ filegroup(
     name = "csrcs",
     srcs = glob(["**/*.c"]),
 )
-
-filegroup(
-    name = "chdrs",
-    srcs = glob(["src/**/*.h"]),
-)
-
-cc_library(
-    name = "libwebp_raw",
-    srcs = [":srcs"],
-    hdrs = [":chdrs"],
-    copts = [
-        "-Wno-int-conversion",
-    ],
-    includes = [
-        ".",
-        "src",
-    ],
-    linkopts = ["-lm"],
-)

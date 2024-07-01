@@ -1,5 +1,5 @@
-load("@buildifier_prebuilt//:rules.bzl", "buildifier")
-load("@gazelle//:def.bzl", "gazelle")
+load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
+load("@bazel_gazelle//:def.bzl", "gazelle")
 
 BUILDIFIER_EXCLUDE_PATTERNS = [
     "./.git/*",
@@ -20,3 +20,13 @@ buildifier(
 )
 
 gazelle(name = "gazelle")
+
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=bazel/go_deps.bzl%go_deps",
+        "-prune",
+    ],
+    command = "update-repos",
+)

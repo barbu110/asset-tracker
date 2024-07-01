@@ -1,0 +1,11 @@
+--- encoder/BUILD.bazel
++++ encoder/BUILD.bazel
+@@ -7,7 +7,7 @@
+         "options.go",
+     ],
+     cgo = True,
+-    clinkopts = ["-lwebp"],
++    cdeps = ["@asset-tracker//external/libwebp"],
+     importpath = "github.com/kolesa-team/go-webp/encoder",
+     visibility = ["//visibility:public"],
+ )

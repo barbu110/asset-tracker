@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "renderer",
+    srcs = [
+        "barcode.go",
+        "dimensions.go",
+        "font_family.go",
+        "raster.go",
+        "renderer.go",
+    ],
+    data = [
+        ":data/fonts/CourierNew.ttf",
+        ":data/fonts/CourierNewBold.ttf",
+    ],
+    importpath = "asset-tracker/pkg/label/renderer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_boombuler_barcode//:barcode",
+        "@com_github_boombuler_barcode//datamatrix",
+        "@com_github_tdewolff_canvas//:canvas",
+        "@com_github_tdewolff_canvas//renderers",
+        "@io_bazel_rules_go//go/runfiles:go_default_library",
+    ],
+)

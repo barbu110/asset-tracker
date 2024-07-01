@@ -1,4 +1,4 @@
-load("@rules_go//proto:def.bzl", "go_proto_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -14,6 +14,11 @@ proto_library(
     deps = [":asset_common_proto"],
 )
 
+proto_library(
+    name = "label_service_proto",
+    srcs = ["label_service.proto"],
+)
+
 go_proto_library(
     name = "asset_common_go_proto",
     importpath = "asset-tracker/proto/asset_common",
@@ -22,8 +27,15 @@ go_proto_library(
 
 go_proto_library(
     name = "asset_service_go_proto",
-    compilers = ["@rules_go//proto:go_grpc"],
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
     importpath = "asset-tracker/proto/asset_service",
     protos = [":asset_service_proto"],
     deps = [":asset_common_go_proto"],
+)
+
+go_proto_library(
+    name = "label_service_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "asset-tracker/proto/label_service",
+    protos = [":label_service_proto"],
 )

@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = ["server.go"],
+    importpath = "asset-tracker/services/label_service/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto:label_service_go_proto",
+        "@org_uber_go_zap//:zap",
+    ],
+)

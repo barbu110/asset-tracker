@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package asset_tracker.label_service;
+option go_package = "asset-tracker/proto/label_service";
+
+service Label {
+  rpc RenderLabel(RenderLabelRequest) returns (RenderLabelResponse);
+  rpc ListLabelsForAsset(ListLabelsForAssetRequest) returns (ListLabelsForAssetResponse);
+  rpc GetLabelUrl(GetLabelUrlRequest) returns (GetLabelUrlResponse);
+}
+
+message RenderLabelRequest {
+  string asset_id = 1;
+}
+
+message RenderLabelResponse {
+  string label_id = 1;
+}
+
+message ListLabelsForAssetRequest {
+  string asset_id = 1;
+}
+
+message ListLabelsForAssetResponse {
+  repeated string label_ids = 1;
+}
+
+enum LabelFormat {
+  LABEL_FORMAT_UNSPECIFIED = 0;
+  LABEL_FORMAT_VECTOR = 1;
+}
+
+message GetLabelUrlRequest {
+  string label_id = 1;
+  LabelFormat label_format = 2;
+}
+
+message GetLabelUrlResponse {
+  string url = 1;
+}

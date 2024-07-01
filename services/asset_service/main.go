@@ -21,7 +21,7 @@ func main() {
 	}
 
 	dynamodbClient := dynamodb.NewFromConfig(cfg)
-	logger, _ := zap.NewDevelopment()
+	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
 	address := fmt.Sprintf("localhost:%d", 8000)

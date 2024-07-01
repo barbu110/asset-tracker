@@ -3,37 +3,4 @@ module(
     version = "1.0",
 )
 
-bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
-
-bazel_dep(name = "rules_go", version = "0.48.0")
-bazel_dep(name = "gazelle", version = "0.37.0")
 bazel_dep(name = "rules_cc", version = "0.0.9")
-
-go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download(version = "1.22.4")
-
-go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.from_file(go_mod = "//:go.mod")
-use_repo(
-    go_deps,
-    "com_github_ajstarks_svgo",
-    "com_github_aws_aws_sdk_go_v2",
-    "com_github_aws_aws_sdk_go_v2_config",
-    "com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue",
-    "com_github_aws_aws_sdk_go_v2_service_dynamodb",
-    "com_github_boombuler_barcode",
-    "com_github_golang_protobuf",
-    "com_github_kolesa_team_go_webp",
-    "com_github_spf13_cobra",
-    "com_github_spf13_viper",
-    "com_github_tdewolff_canvas",
-    "com_github_vincent_petithory_dataurl",
-    "com_github_vmihailenco_msgpack_v5",
-    "org_golang_google_grpc",
-    "org_uber_go_zap",
-)
-
-bazel_dep(name = "rules_proto", version = "6.0.0")
-
-external_deps = use_extension("//:bazel/external_deps.bzl", "external_deps")
-use_repo(external_deps, "libwebp")
