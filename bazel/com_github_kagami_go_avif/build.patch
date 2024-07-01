@@ -1,0 +1,11 @@
+--- BUILD.bazel
++++ BUILD.bazel
+@@ -9,7 +9,7 @@
+         "mp4.go",
+     ],
+     cgo = True,
+-    clinkopts = ["-laom"],
++    cdeps = ["@asset-tracker//external/libaom"],
+     copts = ["-Wall -O2 -DNDEBUG"],
+     importpath = "github.com/Kagami/go-avif",
+     visibility = ["//visibility:public"],

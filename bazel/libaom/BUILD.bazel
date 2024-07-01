@@ -1,0 +1,9 @@
+filegroup(
+    name = "srcs",
+    srcs = glob(
+        ["**/*"],
+        # https://github.com/bazelbuild/rules_foreign_cc/issues/1034#issuecomment-2009876928
+        exclude = ["bazel*/**"],
+    ),
+    visibility = ["//visibility:public"],
+)

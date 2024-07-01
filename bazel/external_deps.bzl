@@ -9,6 +9,13 @@ def register_deps_external_repos():
         build_file = "//:bazel/libwebp/BUILD.bazel",
     )
 
+    git_repository(
+        name = "libaom",
+        remote = "https://aomedia.googlesource.com/aom",
+        commit = "2c308fd916c54ce21e8a8b9f46c17393f273fe44",
+        build_file = "//:bazel/libaom/BUILD.bazel",
+    )
+
 def register_build_system_external_repos():
     git_repository(
         name = "rules_foreign_cc",

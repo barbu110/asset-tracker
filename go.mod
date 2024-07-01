@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/Kagami/go-avif v0.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-latex/latex v0.0.0-20230307184459-12ec69307ad9 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

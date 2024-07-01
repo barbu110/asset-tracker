@@ -9,12 +9,12 @@ configure_make(
         "--disable-tiff",
         "--disable-gif",
     ],
-    lib_source = "@libwebp//:srcs",
     env = select({
         "@platforms//os:macos": {
             "AR": "/usr/bin/ar",
         },
         "//conditions:default": {},
     }),
+    lib_source = "@libwebp//:srcs",
     visibility = ["//visibility:public"],
 )

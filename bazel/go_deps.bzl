@@ -614,6 +614,13 @@ def go_deps():
         version = "v0.0.0-20230614200233-a9de23ed2e25",
     )
     go_repository(
+        name = "com_github_kagami_go_avif",
+        importpath = "github.com/Kagami/go-avif",
+        sum = "h1:8GHAGLxCdFfhpd4Zg8j1EqO7rtcQNenxIDerC/uu68w=",
+        version = "v0.1.0",
+        patches = ["//:bazel/com_github_kagami_go_avif/build.patch"], # keep
+    )
+    go_repository(
         name = "com_github_kisielk_gotool",
         importpath = "github.com/kisielk/gotool",
         sum = "h1:AV2c/EiW3KqPNT9ZKl07ehoAGi4C5/01Cfbblndcapg=",
@@ -865,6 +872,12 @@ def go_deps():
         importpath = "github.com/tdewolff/argp",
         sum = "h1:jhgOvRmOvhuMEd3z8kSI4zyqTg0WF3KuuOcJAXHaW9s=",
         version = "v0.0.0-20240307141015-960de61a6aa8",
+    )
+    go_repository(
+        name = "com_github_tdewolff_canvas",
+        importpath = "github.com/tdewolff/canvas",
+        sum = "h1:Gu+QivjIMiUSufNup340ME2aGOgESeIXQOCSjdyXE1w=",
+        version = "v0.0.0-20240521203133-699cfc271500",
     )
     go_repository(
         name = "com_github_tdewolff_font",
