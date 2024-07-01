@@ -1,5 +1,7 @@
 workspace(name = "asset_tracker")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 load("//:bazel/external_deps.bzl", "register_build_system_external_repos", "register_deps_external_repos")
 
 register_build_system_external_repos()
@@ -40,6 +42,15 @@ rules_proto_toolchains()
 # Setup Protocol Buffers required by Build Tools
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 protobuf_deps()
+
+http_archive(
+    name = "com_github_bazelbuild_buildtools",
+    sha256 = "ae34c344514e08c23e90da0e2d6cb700fcd28e80c02e23e4d5715dddcb42f7b3",
+    strip_prefix = "buildtools-4.2.2",
+    urls = [
+        "https://github.com/bazelbuild/buildtools/archive/refs/tags/4.2.2.tar.gz",
+    ],
+)
 
 register_deps_external_repos()
 
