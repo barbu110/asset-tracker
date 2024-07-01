@@ -618,7 +618,7 @@ def go_deps():
         importpath = "github.com/Kagami/go-avif",
         sum = "h1:8GHAGLxCdFfhpd4Zg8j1EqO7rtcQNenxIDerC/uu68w=",
         version = "v0.1.0",
-        patches = ["//:bazel/com_github_kagami_go_avif/build.patch"], # keep
+        patches = ["//:bazel/com_github_kagami_go_avif/build.patch"],  # keep
     )
     go_repository(
         name = "com_github_kisielk_gotool",

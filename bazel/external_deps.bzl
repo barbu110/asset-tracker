@@ -20,7 +20,7 @@ def register_build_system_external_repos():
     git_repository(
         name = "rules_foreign_cc",
         remote = "https://github.com/bazelbuild/rules_foreign_cc.git",
-        commit = "0ed9aaa68282f8a7de56ae4f96191891a75d4dfb"
+        commit = "0ed9aaa68282f8a7de56ae4f96191891a75d4dfb",
     )
 
     http_archive(

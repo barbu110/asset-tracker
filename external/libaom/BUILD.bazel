@@ -3,6 +3,6 @@ load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
 cmake(
     name = "libaom",
     lib_source = "@libaom//:srcs",
-    visibility = ["//visibility:public"],
     out_static_libs = ["libaom.a"],
+    visibility = ["//visibility:public"],
 )

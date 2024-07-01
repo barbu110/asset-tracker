@@ -1,7 +1,6 @@
 workspace(name = "asset_tracker")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 load("//:bazel/external_deps.bzl", "register_build_system_external_repos", "register_deps_external_repos")
 
 register_build_system_external_repos()
@@ -31,16 +30,20 @@ gazelle_dependencies()
 
 # Setup Protocol Buffers Rules
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies")
+
 rules_proto_dependencies()
 
 load("@rules_proto//proto:setup.bzl", "rules_proto_setup")
+
 rules_proto_setup()
 
 load("@rules_proto//proto:toolchains.bzl", "rules_proto_toolchains")
+
 rules_proto_toolchains()
 
 # Setup Protocol Buffers required by Build Tools
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
 protobuf_deps()
 
 http_archive(
@@ -54,5 +57,4 @@ http_archive(
 
 register_deps_external_repos()
 
-load("//:bazel/go_deps.bzl", "go_deps")
 go_deps()
