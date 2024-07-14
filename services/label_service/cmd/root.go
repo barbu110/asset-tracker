@@ -1,11 +1,15 @@
 package cmd
 
 import (
+	"asset-tracker/proto/label_service"
 	"asset-tracker/services/label_service/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
+	"net"
 )
 
 var logger *zap.Logger
@@ -19,12 +23,27 @@ var rootCmd = &cobra.Command{
 	Use:   "label_service",
 	Short: "Service specialized on rendering asset labels.",
 	Run: func(_ *cobra.Command, _ []string) {
-		_, err := loadConfig()
+		config, err := loadConfig()
 		if err != nil {
 			logger.Fatal("Failed to load configuration.", zap.Error(err))
 		}
 
-		_ = server.LabelServer{logger}
+		srv := server.LabelServer{Logger: logger}
+		grpcServer := grpc.NewServer()
+		label_service.RegisterLabelServer(grpcServer, &srv)
+		reflection.Register(grpcServer)
+
+		logger.Info("Registered LabelService onto the GRPC server.")
+		logger.Info("Starting TCP listener", zap.String("address", config.Bind))
+
+		lis, err := net.Listen("tcp", config.Bind)
+		if err != nil {
+			logger.Error("Could not start TCP listener.", zap.Error(err))
+		}
+
+		if err := grpcServer.Serve(lis); err != nil {
+			logger.Error("Could not start GRPC server.", zap.Error(err))
+		}
 	},
 }
 
