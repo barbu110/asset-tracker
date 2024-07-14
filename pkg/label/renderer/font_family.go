@@ -8,7 +8,7 @@ import (
 )
 
 const bazelRoot = "_main"
-const fontSize = 24
+const fontSize = 9 // mm
 
 var courierNew = prepareCourierNew()
 var boldFontFace = courierNew.Face(fontSize, canvas.FontBold)

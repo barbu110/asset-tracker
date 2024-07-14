@@ -23,11 +23,6 @@ func renderBarcode(params *renderBarcodeParams) (*image.Image, error) {
 		return nil, fmt.Errorf("cannot scale barcode: %w", err)
 	}
 
-	// buf := bytes.Buffer{}
-	//if e := png.Encode(&buf, bc); e != nil {
-	//	return nil, fmt.Errorf("cannot encode png: %w", err)
-	//}
-	//return dataurl.EncodeBytes(buf.Bytes()), nil
-
-	return &bc, nil
+	img := image.Image(bc)
+	return &img, nil
 }

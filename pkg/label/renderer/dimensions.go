@@ -7,11 +7,12 @@ import (
 
 const (
 	printerDPI = 203
+	zoomFactor = 2.0
 	inchPerMm  = 1.0 / 25.4
 )
 
 const (
-	padding = 10
+	padding = 2 // mm
 )
 
 var LabelSizeMM = canvas.Size{W: 40, H: 30}
