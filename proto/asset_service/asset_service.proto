@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "proto/asset_common.proto";
+import "proto/asset_common/asset_common.proto";
 
 package asset_tracker.asset_service;
 option go_package = "asset-tracker/proto/asset_service";

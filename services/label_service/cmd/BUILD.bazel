@@ -6,7 +6,7 @@ go_library(
     importpath = "asset-tracker/services/label_service/cmd",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/label/renderer",
+        "//services/label_service/server",
         "@com_github_spf13_cobra//:cobra",
         "@com_github_spf13_viper//:viper",
         "@org_uber_go_zap//:zap",

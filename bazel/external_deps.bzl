@@ -2,17 +2,21 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def register_deps_external_repos():
-    git_repository(
+    http_archive(
         name = "libwebp",
-        remote = "https://chromium.googlesource.com/webm/libwebp",
-        commit = "9ce982fdf21764ef7b273f91d6d72721656c3e03",
+        integrity = "sha256-9CG/s1aEQwQnJ4ks/jmUJANuag0O++lnQ60m9JR0RXk=",
+        urls = [
+            "https://chromium.googlesource.com/webm/libwebp/+archive/d742b24a882634fc2a0477c1d88c4948c2d8b9f9.tar.gz",
+        ],
         build_file = "//:bazel/libwebp/BUILD.bazel",
     )
 
-    git_repository(
+    http_archive(
         name = "libaom",
-        remote = "https://aomedia.googlesource.com/aom",
-        commit = "2c308fd916c54ce21e8a8b9f46c17393f273fe44",
+        integrity = "sha256-MeLGTy1gzIMZWx5zyoF9awIam3iSI5eZSswdznVpRZ8=",
+        urls = [
+            "https://aomedia.googlesource.com/aom/+archive/ff710a53216b2100c2480eff4cb9d7cbc9656a4a.tar.gz",
+        ],
         build_file = "//:bazel/libaom/BUILD.bazel",
     )
 

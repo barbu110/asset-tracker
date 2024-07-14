@@ -6,7 +6,7 @@ go_library(
     importpath = "asset-tracker/services/label_service/server",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto:label_service_go_proto",
+        "//proto/label_service",
         "@org_uber_go_zap//:zap",
     ],
 )

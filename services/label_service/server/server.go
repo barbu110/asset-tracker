@@ -6,21 +6,21 @@ import (
 	"go.uber.org/zap"
 )
 
-type labelServer struct {
+type LabelServer struct {
 	Logger *zap.Logger
 }
 
-func (l *labelServer) RenderLabel(ctx context.Context, request *label_service.RenderLabelRequest) (*label_service.RenderLabelResponse, error) {
+func (l *LabelServer) RenderLabel(ctx context.Context, request *label_service.RenderLabelRequest) (*label_service.RenderLabelResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l *labelServer) ListLabelsForAsset(ctx context.Context, request *label_service.ListLabelsForAssetRequest) (*label_service.ListLabelsForAssetResponse, error) {
+func (l *LabelServer) ListLabelsForAsset(ctx context.Context, request *label_service.ListLabelsForAssetRequest) (*label_service.ListLabelsForAssetResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l *labelServer) GetLabelUrl(ctx context.Context, request *label_service.GetLabelUrlRequest) (*label_service.GetLabelUrlResponse, error) {
+func (l *LabelServer) GetLabelUrl(ctx context.Context, request *label_service.GetLabelUrlRequest) (*label_service.GetLabelUrlResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
