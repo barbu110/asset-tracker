@@ -11,9 +11,9 @@ configure_make(
         "//conditions:default": {},
     }),
     lib_source = "@libwebp//:srcs",
-    visibility = ["//visibility:public"],
     out_static_libs = [
-      "libwebp.a",
-      "libsharpyuv.a",
-    ]
+        "libwebp.a",
+        "libsharpyuv.a",
+    ],
+    visibility = ["//visibility:public"],
 )
