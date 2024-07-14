@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "proto/asset_common.proto";
+
 package asset_tracker.label_service;
 option go_package = "asset-tracker/proto/label_service";
 
@@ -10,7 +12,7 @@ service Label {
 }
 
 message RenderLabelRequest {
-  string asset_id = 1;
+  asset_tracker.asset_common.AssetObject asset = 1;
 }
 
 message RenderLabelResponse {
