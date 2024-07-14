@@ -7,7 +7,7 @@ import (
 	"path"
 )
 
-const bazelRoot = "__main__"
+const bazelRoot = "_main"
 const fontSize = 24
 
 var courierNew = prepareCourierNew()
