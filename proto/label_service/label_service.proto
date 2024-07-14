@@ -30,6 +30,7 @@ message ListLabelsForAssetResponse {
 enum LabelFormat {
   LABEL_FORMAT_UNSPECIFIED = 0;
   LABEL_FORMAT_VECTOR = 1;
+  LABEL_FORMAT_PNG = 2;
 }
 
 message GetLabelUrlRequest {

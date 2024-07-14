@@ -6,7 +6,12 @@ go_library(
     importpath = "asset-tracker/services/label_service/server",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/core/asset",
+        "//pkg/label",
+        "//pkg/label_manager",
         "//proto/label_service",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
         "@org_uber_go_zap//:zap",
     ],
 )

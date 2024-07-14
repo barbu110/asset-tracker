@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "label_manager",
+    srcs = [
+        "base.go",
+        "ddb.go",
+        "utils.go",
+    ],
+    importpath = "asset-tracker/pkg/label_manager",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/core/asset",
+        "//pkg/label",
+        "//pkg/label/renderer",
+        "//pkg/rendered_label_storage",
+        "@com_github_aws_aws_sdk_go_v2//aws",
+        "@com_github_aws_aws_sdk_go_v2_feature_dynamodb_attributevalue//:attributevalue",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//:dynamodb",
+        "@com_github_aws_aws_sdk_go_v2_service_dynamodb//types",
+        "@org_uber_go_zap//:zap",
+    ],
+)

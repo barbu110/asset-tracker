@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "label",
+    srcs = [
+        "id.go",
+        "model.go",
+    ],
+    importpath = "asset-tracker/pkg/label",
+    visibility = ["//visibility:public"],
+    deps = ["//pkg/core/asset"],
+)
