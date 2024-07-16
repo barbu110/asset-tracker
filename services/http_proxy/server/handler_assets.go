@@ -1,11 +1,13 @@
 package server
 
 import (
+	core_asset "asset-tracker/pkg/core/asset"
 	"asset-tracker/proto/asset_service"
 	"asset-tracker/services/http_proxy/server/proxy_error"
-	"context"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net/http"
 )
 
@@ -25,10 +27,14 @@ type listAssetsOutput struct {
 	NextToken *string `json:"nextToken,omitempty"`
 }
 
-func (s *ProxyServerImpl) ListAssets(c *gin.Context) {
+type getAssetOutput struct {
+	Asset asset `json:"asset"`
+}
+
+func (s *ProxyServerImpl) ListAssets(ctx *gin.Context) {
 	var input listAssetsInput
-	if err := c.ShouldBindQuery(&input); err != nil {
-		proxy_error.AbortWithErrorResponse(c, proxy_error.BadRequest, "Bad request.")
+	if err := ctx.ShouldBindQuery(&input); err != nil {
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.BadRequest, "Bad request.")
 		return
 	}
 
@@ -36,13 +42,14 @@ func (s *ProxyServerImpl) ListAssets(c *gin.Context) {
 	if len(input.StartToken) > 0 {
 		startToken = &input.StartToken
 	}
-	r, err := s.AssetService.ListAssets(context.TODO(), &asset_service.ListAssetsRequest{
+	r, err := s.AssetService.ListAssets(ctx, &asset_service.ListAssetsRequest{
 		MaxItems:  input.MaxItems,
 		NextToken: startToken,
 	})
 	if err != nil {
 		s.Logger.Error("ListAssets operation failed.", zap.Error(err))
-		proxy_error.AbortWithErrorResponse(c, proxy_error.InternalError, "Internal server error.")
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.InternalError, "Internal server error.")
+		return
 	}
 
 	assets := make([]asset, len(r.Assets))
@@ -53,8 +60,42 @@ func (s *ProxyServerImpl) ListAssets(c *gin.Context) {
 			Description: a.GetDescription(),
 		}
 	}
-	c.JSON(http.StatusOK, listAssetsOutput{
+	ctx.JSON(http.StatusOK, listAssetsOutput{
 		Assets:    assets,
 		NextToken: r.NextToken,
+	})
+}
+
+func (s *ProxyServerImpl) GetAsset(ctx *gin.Context) {
+	rawID := ctx.Param("id")
+	if _, err := core_asset.ParseId(rawID); err != nil {
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.BadRequest, "Invalid asset ID.")
+		return
+	}
+
+	r, err := s.AssetService.GetAsset(ctx, &asset_service.GetAssetRequest{Id: rawID})
+	if err != nil {
+		if e, ok := status.FromError(err); ok {
+			switch e.Code() {
+			case codes.InvalidArgument:
+				proxy_error.AbortWithErrorResponse(ctx, proxy_error.BadRequest, "Bad request.")
+				return
+			case codes.NotFound:
+				proxy_error.AbortWithErrorResponse(ctx, proxy_error.NotFound, "Asset not found.")
+				return
+			}
+		}
+
+		s.Logger.Error("GetAsset operation failed.", zap.Error(err))
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.InternalError, "Internal error.")
+	}
+
+	a := r.GetAsset()
+	ctx.JSON(http.StatusOK, getAssetOutput{
+		Asset: asset{
+			Id:          a.GetId(),
+			Name:        a.GetName(),
+			Description: a.GetDescription(),
+		},
 	})
 }

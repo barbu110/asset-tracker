@@ -9,11 +9,13 @@ go_library(
     importpath = "asset-tracker/services/http_proxy/server",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/asset_common",
+        "//pkg/core/asset",
         "//proto/asset_service",
         "//proto/label_service",
         "//services/http_proxy/server/proxy_error",
         "@com_github_gin_gonic_gin//:gin",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
         "@org_uber_go_zap//:zap",
     ],
 )

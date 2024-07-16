@@ -8,6 +8,7 @@ import (
 const (
 	BadRequest = iota
 	InternalError
+	NotFound
 )
 
 type ProxyError int
@@ -18,6 +19,8 @@ func (e ProxyError) String() string {
 		return "BAD_REQUEST"
 	case InternalError:
 		return "INTERNAL_ERROR"
+	case NotFound:
+		return "NOT_FOUND"
 	}
 
 	panic(fmt.Sprintf("ProxyError unhandled: %d", e))
@@ -29,6 +32,8 @@ func (e ProxyError) HttpStatusCode() int {
 		return http.StatusBadRequest
 	case InternalError:
 		return http.StatusInternalServerError
+	case NotFound:
+		return http.StatusNotFound
 	}
 
 	panic(fmt.Sprintf("ProxyError unhandled: %d", e))
