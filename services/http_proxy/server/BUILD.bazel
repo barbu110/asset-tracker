@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = [
+        "handler_assets.go",
+        "server.go",
+    ],
+    importpath = "asset-tracker/services/http_proxy/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/asset_common",
+        "//proto/asset_service",
+        "//proto/label_service",
+        "//services/http_proxy/server/proxy_error",
+        "@com_github_gin_gonic_gin//:gin",
+        "@org_uber_go_zap//:zap",
+    ],
+)

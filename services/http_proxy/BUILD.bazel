@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "http_proxy_lib",
+    srcs = ["main.go"],
+    importpath = "asset-tracker/services/http_proxy",
+    visibility = ["//visibility:public"],
+    deps = ["//services/http_proxy/cmd"],
+)
+
+go_binary(
+    name = "http_proxy",
+    embed = [":http_proxy_lib"],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = ["root.go"],
+    importpath = "asset-tracker/services/http_proxy/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/asset_service",
+        "//proto/label_service",
+        "//services/http_proxy/server",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_spf13_viper//:viper",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_uber_go_zap//:zap",
+    ],
+)

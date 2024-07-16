@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "proxy_error",
+    srcs = [
+        "proxy_error.go",
+        "response.go",
+    ],
+    importpath = "asset-tracker/services/http_proxy/server/proxy_error",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gin_gonic_gin//:gin"],
+)
