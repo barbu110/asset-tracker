@@ -4,12 +4,15 @@ go_library(
     name = "server",
     srcs = [
         "handler_assets.go",
+        "handler_labels.go",
         "server.go",
     ],
     importpath = "asset-tracker/services/http_proxy/server",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/core/asset",
+        "//pkg/label",
+        "//proto/asset_common",
         "//proto/asset_service",
         "//proto/label_service",
         "//services/http_proxy/server/proxy_error",

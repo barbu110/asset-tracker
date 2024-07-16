@@ -11,6 +11,8 @@ type ProxyServer interface {
 	ListAssets(c *gin.Context)
 	GetAsset(c *gin.Context)
 	ListLabelsForAsset(c *gin.Context)
+	RenderLabel(c *gin.Context)
+	MakeLabelUrl(c *gin.Context)
 }
 
 type ProxyServerImpl struct {
@@ -24,4 +26,8 @@ func SetupHTTPRouter(s ProxyServer, engine *gin.Engine) {
 	assets.GET("/", s.ListAssets)
 	assets.GET("/:id", s.GetAsset)
 	assets.GET("/:id/labels", s.ListLabelsForAsset)
+
+	labels := engine.Group("/labels")
+	labels.POST("/:labelId", s.MakeLabelUrl)
+	labels.POST("/render/:assetId", s.RenderLabel)
 }
