@@ -3,6 +3,7 @@ package server
 import (
 	core_asset "asset-tracker/pkg/core/asset"
 	"asset-tracker/proto/asset_service"
+	"asset-tracker/proto/label_service"
 	"asset-tracker/services/http_proxy/server/proxy_error"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -29,6 +30,10 @@ type listAssetsOutput struct {
 
 type getAssetOutput struct {
 	Asset asset `json:"asset"`
+}
+
+type listLabelsForAssetOutput struct {
+	LabelIds []string `json:"labelIds"`
 }
 
 func (s *ProxyServerImpl) ListAssets(ctx *gin.Context) {
@@ -97,5 +102,25 @@ func (s *ProxyServerImpl) GetAsset(ctx *gin.Context) {
 			Name:        a.GetName(),
 			Description: a.GetDescription(),
 		},
+	})
+}
+
+func (s *ProxyServerImpl) ListLabelsForAsset(ctx *gin.Context) {
+	rawID := ctx.Param("id")
+	if _, err := core_asset.ParseId(rawID); err != nil {
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.BadRequest, "Invalid asset ID.")
+		return
+	}
+
+	r, err := s.LabelService.ListLabelsForAsset(ctx, &label_service.ListLabelsForAssetRequest{
+		AssetId: rawID,
+	})
+	if err != nil {
+		s.Logger.Error("ListLabelsForAsset operation failed.", zap.String("assetId", rawID), zap.Error(err))
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.InternalError, "Internal error.")
+	}
+
+	ctx.JSON(http.StatusOK, listLabelsForAssetOutput{
+		LabelIds: r.GetLabelIds(),
 	})
 }
