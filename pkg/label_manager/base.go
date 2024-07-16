@@ -11,6 +11,7 @@ var ErrLabelNotFound = errors.New("asset not found")
 type LabelManager interface {
 	CreateLabel(params *CreateLabelParams) (*label.Label, error)
 	GetLabel(id label.Id) (*label.Label, error)
+	ListLabelsForAsset(assetId asset.Id) ([]label.Id, error)
 	GetRenderedImageURL(id label.Id) (string, error)
 }
 

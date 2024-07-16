@@ -38,8 +38,25 @@ func (l *LabelServer) RenderLabel(ctx context.Context, request *label_service.Re
 }
 
 func (l *LabelServer) ListLabelsForAsset(ctx context.Context, request *label_service.ListLabelsForAssetRequest) (*label_service.ListLabelsForAssetResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	assetId, err := asset.ParseId(request.GetAssetId())
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid Asset ID.")
+	}
+
+	ids, err := l.LabelManager.ListLabelsForAsset(assetId)
+	if err != nil {
+		l.Logger.Error("Failed retrieving labels for asset.",
+			zap.String("assetId", request.GetAssetId()),
+			zap.Error(err))
+		return nil, status.Errorf(codes.Internal, "Internal error.")
+	}
+
+	encodedIds := make([]string, len(ids))
+	for i, item := range ids {
+		encodedIds[i] = label.EncodeIdToString(item)
+	}
+
+	return &label_service.ListLabelsForAssetResponse{LabelIds: encodedIds}, nil
 }
 
 func (l *LabelServer) GetLabelUrl(ctx context.Context, request *label_service.GetLabelUrlRequest) (*label_service.GetLabelUrlResponse, error) {

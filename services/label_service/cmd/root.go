@@ -25,6 +25,7 @@ type Config struct {
 	AssetServiceEndpoint     string `mapstructure:"ASSET_SERVICE_ENDPOINT"`
 	Bind                     string `mapstructure:"BIND"`
 	LabelsTableName          string `mapstructure:"LABELS_TABLE_NAME"`
+	AssetIdIndexName         string `mapstructure:"ASSET_ID_INDEX_NAME"`
 	RenderedLabelsBucketName string `mapstructure:"RENDERED_LABELS_BUCKET_NAME"`
 }
 
@@ -60,6 +61,7 @@ var rootCmd = &cobra.Command{
 			Logger:               logger,
 			Client:               dynamodbClient,
 			TableName:            c.LabelsTableName,
+			AssetIdIndexName:     c.AssetIdIndexName,
 			RenderedLabelStorage: &labelStorage,
 			LabelRenderer:        &renderer.RasterRenderer{},
 		}
@@ -96,6 +98,9 @@ func Execute() {
 	rootCmd.Flags().String("labels_table_name", "", "Name of DynamoDB table holding labels data.")
 	_ = viper.BindPFlag("labels_table_name", rootCmd.Flags().Lookup("labels_table_name"))
 
+	rootCmd.Flags().String("asset_id_index_name", "AssetId-Index", "Name of DynamoDB Index with PK AssetId.")
+	_ = viper.BindPFlag("asset_id_index_name", rootCmd.Flags().Lookup("asset_id_index_name"))
+
 	rootCmd.Flags().String("rendered_labels_bucket_name", "", "Name of S3 bucket holding rendered labels.")
 	_ = viper.BindPFlag("rendered_labels_bucket_name", rootCmd.Flags().Lookup("rendered_labels_bucket_name"))
 
@@ -111,6 +116,7 @@ func loadConfig() (Config, error) {
 	viper.MustBindEnv(
 		"asset_service_endpoint",
 		"labels_table_name",
+		"asset_id_index_name",
 		"rendered_labels_bucket_name",
 	)
 

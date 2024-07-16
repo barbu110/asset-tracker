@@ -1,6 +1,7 @@
 package label_manager
 
 import (
+	"asset-tracker/pkg/core/asset"
 	"asset-tracker/pkg/label"
 	"asset-tracker/pkg/label/renderer"
 	"asset-tracker/pkg/rendered_label_storage"
@@ -20,8 +21,13 @@ type DynamoDB struct {
 	Logger               *zap.Logger
 	Client               *dynamodb.Client
 	TableName            string
+	AssetIdIndexName     string
 	RenderedLabelStorage rendered_label_storage.RenderedLabelStorage
 	LabelRenderer        renderer.LabelRenderer
+}
+
+type assetIdIndexItem struct {
+	Id label.Id
 }
 
 func labelKey(id *label.Id) map[string]types.AttributeValue {
@@ -105,6 +111,36 @@ func (d *DynamoDB) GetLabel(id label.Id) (*label.Label, error) {
 	}
 
 	return &l, nil
+}
+
+func (d *DynamoDB) ListLabelsForAsset(assetId asset.Id) ([]label.Id, error) {
+	assetIdBytes, _ := assetId.MarshalBinary()
+	o, err := d.Client.Query(context.TODO(), &dynamodb.QueryInput{
+		TableName:              aws.String(d.TableName),
+		IndexName:              aws.String(d.AssetIdIndexName),
+		Limit:                  aws.Int32(16),
+		ProjectionExpression:   aws.String("Id"),
+		KeyConditionExpression: aws.String("AssetId = :assetId"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":assetId": &types.AttributeValueMemberB{Value: assetIdBytes},
+		},
+	})
+	if err != nil {
+		d.Logger.Error("Query call failed.", zap.Error(err))
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+
+	ids := make([]label.Id, len(o.Items))
+	for i, item := range o.Items {
+		var parsed assetIdIndexItem
+		if err := attributevalue.UnmarshalMap(item, &parsed); err != nil {
+			return nil, fmt.Errorf("failed parsing item in AssetId index: %w", err)
+		}
+
+		ids[i] = parsed.Id
+	}
+
+	return ids, nil
 }
 
 func (d *DynamoDB) GetRenderedImageURL(id label.Id) (string, error) {
