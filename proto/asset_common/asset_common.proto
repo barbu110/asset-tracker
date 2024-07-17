@@ -3,8 +3,17 @@ syntax = "proto3";
 package asset_tracker.asset_common;
 option go_package = "asset-tracker/proto/asset_common";
 
+enum AssetKind {
+  ASSET_KIND_UNSPECIFIED = 0;
+  ASSET_KIND_ITEM = 1;
+  ASSET_KIND_CONTAINER = 2;
+}
+
 message AssetObject {
   string id = 1;
+  optional string container_id = 6;
+  AssetKind asset_kind = 5;
+
   string name = 2;
   string description = 3;
   repeated AssetAttribute attributes = 4;

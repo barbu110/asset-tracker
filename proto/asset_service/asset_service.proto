@@ -12,6 +12,8 @@ service Asset {
 }
 
 message CreateAssetRequest {
+  optional string container_id = 4;
+  asset_tracker.asset_common.AssetKind asset_kind = 5;
   string name = 1;
   string description = 2;
   repeated asset_tracker.asset_common.AssetAttribute attributes = 3;

@@ -15,6 +15,14 @@ func (id Id) MarshalBinary() (data []byte, err error) {
 	return id, nil
 }
 
+func RootContainerId() Id {
+	buf := make([]byte, IdSize)
+	for i := range buf {
+		buf[i] = 0
+	}
+	return buf
+}
+
 func RandomId() Id {
 	buf := make([]byte, IdSize)
 	if _, err := rand.Read(buf); err != nil {

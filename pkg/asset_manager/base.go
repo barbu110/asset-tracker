@@ -16,6 +16,7 @@ const ListAssetsDefaultMaxItems uint64 = 100
 type AssetManager interface {
 	CreateAsset(asset asset.Asset) error
 	GetAsset(id *asset.Id) (*asset.Asset, error)
+	HasAsset(id *asset.Id) (bool, error)
 	ListAssets(params *ListAssetsParams) (data pagination.PaginatedData[asset.Asset], err error)
 }
 

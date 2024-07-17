@@ -66,6 +66,21 @@ func (d *DynamoDB) GetAsset(id *asset.Id) (*asset.Asset, error) {
 	return &a, nil
 }
 
+func (d *DynamoDB) HasAsset(id *asset.Id) (bool, error) {
+	o, err := d.Client.GetItem(context.TODO(), &dynamodb.GetItemInput{
+		Key:                  assetKey(id),
+		TableName:            aws.String(d.TableName),
+		ProjectionExpression: aws.String("Id"),
+	})
+	if err != nil {
+		return false, fmt.Errorf("GetItem failed: %w", err)
+	}
+	if o.Item == nil {
+		return false, nil
+	}
+	return true, nil
+}
+
 func (d *DynamoDB) ListAssets(params *ListAssetsParams) (data pagination.PaginatedData[asset.Asset], err error) {
 	startKey, err := d.decodeStartKey(params.NextToken, params.HasNextToken)
 	if err != nil {

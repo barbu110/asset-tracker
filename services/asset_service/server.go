@@ -7,10 +7,12 @@ import (
 	"asset-tracker/proto/asset_service"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"slices"
 )
 
 type assetServer struct {
@@ -38,9 +40,42 @@ func (s *assetServer) CreateAsset(ctx context.Context, request *asset_service.Cr
 		return nil, status.Errorf(codes.InvalidArgument, "Asset description contain between %v and %v characters.",
 			DescriptionLenMin, DescriptionLenMax)
 	}
+	if request.GetAssetKind() == asset_common.AssetKind_ASSET_KIND_UNSPECIFIED {
+		return nil, status.Error(codes.InvalidArgument, "Asset kind must be specified.")
+	}
 
-	// TODO: Include the custom properties there.
-	a := asset.New(request.GetName(), request.GetDescription())
+	var containerID *asset.Id
+
+	if request.ContainerId != nil {
+		if parsed, err := asset.ParseId(request.GetContainerId()); err != nil {
+			return nil, status.Error(codes.InvalidArgument, "Container ID is invalid.")
+		} else {
+			containerID = &parsed
+		}
+
+		container, err := s.AssetManager.GetAsset(containerID)
+		if err != nil {
+			if errors.Is(err, asset_manager.ErrAssetNotFound) {
+				return nil, status.Error(codes.NotFound, "Container does not exist.")
+			}
+
+			s.Logger.Error("Failed verifying that container asset exists.", zap.Error(err))
+			return nil, status.Error(codes.Internal, "Internal error.")
+		}
+
+		if container.Kind != asset.KindContainer {
+			return nil, status.Errorf(codes.InvalidArgument, "Asset %v cannot be used as container.",
+				request.GetContainerId())
+		}
+	}
+
+	var a asset.Asset
+	if request.GetAssetKind() == asset.KindContainer {
+		a = asset.NewContainer(request.GetName(), request.GetDescription(), containerID)
+	} else {
+		a = asset.NewItem(request.GetName(), request.GetDescription(), containerID)
+	}
+
 	if err := s.AssetManager.CreateAsset(a); err != nil {
 		assetIdBytes, _ := a.Id.MarshalBinary()
 		s.Logger.Error(
@@ -56,6 +91,7 @@ func (s *assetServer) CreateAsset(ctx context.Context, request *asset_service.Cr
 			Id:          asset.EncodeIdToString(a.Id),
 			Name:        a.Name,
 			Description: a.Description,
+			AssetKind:   request.GetAssetKind(),
 			Attributes:  []*asset_common.AssetAttribute{},
 		},
 	}, nil
@@ -74,11 +110,34 @@ func (s *assetServer) GetAsset(ctx context.Context, request *asset_service.GetAs
 		return nil, status.Error(codes.Internal, MsgInternalServiceError)
 	}
 
+	grpcAssetKind := func() asset_common.AssetKind {
+		switch a.Kind {
+		case asset.KindUnspecified:
+			return asset_common.AssetKind_ASSET_KIND_UNSPECIFIED
+		case asset.KindItem:
+			return asset_common.AssetKind_ASSET_KIND_ITEM
+		case asset.KindContainer:
+			return asset_common.AssetKind_ASSET_KIND_CONTAINER
+		}
+		panic(fmt.Sprintf("unknown asset kind: %v", a.Kind))
+	}
+
+	containerId := func() *string {
+		if slices.Equal(a.ContainerId, asset.RootContainerId()) {
+			return nil
+		}
+
+		v := asset.EncodeIdToString(a.ContainerId)
+		return &v
+	}
+
 	return &asset_service.GetAssetResponse{
 		Asset: &asset_common.AssetObject{
 			Id:          asset.EncodeIdToString(a.Id),
+			ContainerId: containerId(),
 			Name:        a.Name,
 			Description: a.Description,
+			AssetKind:   grpcAssetKind(),
 			Attributes:  []*asset_common.AssetAttribute{},
 		},
 	}, nil

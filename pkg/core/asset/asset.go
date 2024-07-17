@@ -2,13 +2,18 @@ package asset
 
 import (
 	"fmt"
+	"time"
 )
 
 type Asset struct {
-	Id          Id
-	Name        string
-	Description string
-	Properties  []CustomProperty
+	Id Id
+	// ID of another asset (e.g. a box) in which this one is placed.
+	ContainerId           Id
+	Kind                  Kind
+	Name                  string
+	Description           string
+	Properties            []CustomProperty
+	CreatedAt, ModifiedAt time.Time
 }
 
 type CustomProperty struct {
@@ -16,12 +21,39 @@ type CustomProperty struct {
 	Value string
 }
 
-func New(name, description string, properties ...CustomProperty) Asset {
+func NewItem(name, description string, containerID *Id, properties ...CustomProperty) Asset {
+	actualContainerId := RootContainerId()
+	if containerID != nil {
+		actualContainerId = *containerID
+	}
+
 	return Asset{
 		Id:          RandomId(),
+		ContainerId: actualContainerId,
+		Kind:        KindItem,
 		Name:        name,
 		Description: description,
 		Properties:  properties,
+		CreatedAt:   time.Now().UTC(),
+		ModifiedAt:  time.Now().UTC(),
+	}
+}
+
+func NewContainer(name, description string, containerID *Id, properties ...CustomProperty) Asset {
+	actualContainerId := RootContainerId()
+	if containerID != nil {
+		actualContainerId = *containerID
+	}
+
+	return Asset{
+		Id:          RandomId(),
+		ContainerId: actualContainerId,
+		Kind:        KindContainer,
+		Name:        name,
+		Description: description,
+		Properties:  properties,
+		CreatedAt:   time.Now().UTC(),
+		ModifiedAt:  time.Now().UTC(),
 	}
 }
 

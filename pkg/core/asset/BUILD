@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "asset.go",
         "id.go",
+        "kind.go",
     ],
     importpath = "asset-tracker/pkg/core/asset",
     visibility = ["//visibility:public"],

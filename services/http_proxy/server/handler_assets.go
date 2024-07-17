@@ -18,22 +18,18 @@ type listAssetsInput struct {
 }
 
 type asset struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Id          string          `json:"id"`
+	AssetKind   core_asset.Kind `json:"assetKind"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	ContainerId string          `json:"containerId,omitempty"`
+	CreatedAt   string          `json:"createdAt"`
+	ModifiedAt  string          `json:"modifiedAt"`
 }
 
 type listAssetsOutput struct {
 	Assets    []asset `json:"assets"`
 	NextToken *string `json:"nextToken,omitempty"`
-}
-
-type getAssetOutput struct {
-	Asset asset `json:"asset"`
-}
-
-type listLabelsForAssetOutput struct {
-	LabelIds []string `json:"labelIds"`
 }
 
 func (s *ProxyServerImpl) ListAssets(ctx *gin.Context) {
@@ -96,11 +92,20 @@ func (s *ProxyServerImpl) GetAsset(ctx *gin.Context) {
 	}
 
 	a := r.GetAsset()
-	ctx.JSON(http.StatusOK, getAssetOutput{
+
+	type outputModel struct {
+		Asset asset `json:"asset"`
+	}
+
+	ctx.JSON(http.StatusOK, outputModel{
 		Asset: asset{
 			Id:          a.GetId(),
+			ContainerId: a.GetContainerId(),
+			AssetKind:   core_asset.Kind(a.GetAssetKind()), // TODO Implement this functionality in the gRPC library.
 			Name:        a.GetName(),
 			Description: a.GetDescription(),
+			CreatedAt:   "",
+			ModifiedAt:  "",
 		},
 	})
 }
@@ -120,7 +125,16 @@ func (s *ProxyServerImpl) ListLabelsForAsset(ctx *gin.Context) {
 		proxy_error.AbortWithErrorResponse(ctx, proxy_error.InternalError, "Internal error.")
 	}
 
-	ctx.JSON(http.StatusOK, listLabelsForAssetOutput{
-		LabelIds: r.GetLabelIds(),
+	type outputModel struct {
+		LabelIds []string `json:"labelIds"`
+	}
+
+	labelIds := make([]string, 0)
+	if r.GetLabelIds() != nil {
+		labelIds = r.GetLabelIds()
+	}
+
+	ctx.JSON(http.StatusOK, outputModel{
+		LabelIds: labelIds,
 	})
 }
