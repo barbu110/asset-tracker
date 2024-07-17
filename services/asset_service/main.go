@@ -35,8 +35,9 @@ func main() {
 	srv := assetServer{
 		Logger: logger,
 		AssetManager: &asset_manager.DynamoDB{
-			Client:    dynamodbClient,
-			TableName: "asset-manager-assets",
+			Client:               dynamodbClient,
+			TableName:            "asset-manager-assets",
+			ContainerIdIndexName: "ContainerId-index",
 			NextTokenEncryptionEngine: next_token.EncryptionEngine{
 				KeySource: &next_token.EnvironmentKeySource{VariableName: "NEXT_TOKEN_KEY"},
 			},

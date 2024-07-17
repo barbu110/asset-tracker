@@ -18,6 +18,7 @@ type AssetManager interface {
 	GetAsset(id *asset.Id) (*asset.Asset, error)
 	HasAsset(id *asset.Id) (bool, error)
 	ListAssets(params *ListAssetsParams) (data pagination.PaginatedData[asset.Asset], err error)
+	ListAssetsInContainer(params *ListAssetsInContainerParams) (pagination.PaginatedData[asset.Asset], error)
 }
 
 type ListAssetsParams struct {
@@ -27,6 +28,22 @@ type ListAssetsParams struct {
 }
 
 func (p *ListAssetsParams) GetMaxItems() uint64 {
+	if p.MaxItems == 0 {
+		return ListAssetsDefaultMaxItems
+	} else {
+		return p.MaxItems
+	}
+}
+
+type ListAssetsInContainerParams struct {
+	ContainerId asset.Id
+
+	MaxItems     uint64
+	NextToken    string
+	HasNextToken bool
+}
+
+func (p *ListAssetsInContainerParams) GetMaxItems() uint64 {
 	if p.MaxItems == 0 {
 		return ListAssetsDefaultMaxItems
 	} else {

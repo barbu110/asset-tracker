@@ -57,7 +57,53 @@ func (s *ProxyServerImpl) ListAssets(ctx *gin.Context) {
 	for i, a := range r.Assets {
 		assets[i] = asset{
 			Id:          a.GetId(),
+			ContainerId: a.GetContainerId(),
 			Name:        a.GetName(),
+			AssetKind:   core_asset.Kind(a.GetAssetKind()),
+			Description: a.GetDescription(),
+		}
+	}
+	ctx.JSON(http.StatusOK, listAssetsOutput{
+		Assets:    assets,
+		NextToken: r.NextToken,
+	})
+}
+
+func (s *ProxyServerImpl) ListAssetsInContainer(ctx *gin.Context) {
+	containerID := ctx.Param("containerId")
+	if _, err := core_asset.ParseId(containerID); err != nil {
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.BadRequest, "Invalid container ID.")
+		return
+	}
+
+	var input listAssetsInput
+	if err := ctx.ShouldBindQuery(&input); err != nil {
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.BadRequest, "Bad request.")
+		return
+	}
+
+	var startToken *string = nil
+	if len(input.StartToken) > 0 {
+		startToken = &input.StartToken
+	}
+	r, err := s.AssetService.ListAssetsInContainer(ctx, &asset_service.ListAssetsInContainerRequest{
+		ContainerId: containerID,
+		MaxItems:    input.MaxItems,
+		NextToken:   startToken,
+	})
+	if err != nil {
+		s.Logger.Error("ListAssetsInContainer operation failed.", zap.Error(err))
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.InternalError, "Internal server error.")
+		return
+	}
+
+	assets := make([]asset, len(r.Assets))
+	for i, a := range r.Assets {
+		assets[i] = asset{
+			Id:          a.GetId(),
+			ContainerId: a.GetContainerId(),
+			Name:        a.GetName(),
+			AssetKind:   core_asset.Kind(a.GetAssetKind()),
 			Description: a.GetDescription(),
 		}
 	}

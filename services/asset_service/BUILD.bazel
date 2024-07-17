@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "main.go",
         "server.go",
+        "utils.go",
     ],
     importpath = "asset-tracker/services/asset_service",
     visibility = ["//visibility:private"],

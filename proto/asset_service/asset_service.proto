@@ -9,6 +9,7 @@ service Asset {
   rpc CreateAsset(CreateAssetRequest) returns (CreateAssetResponse);
   rpc GetAsset(GetAssetRequest) returns (GetAssetResponse);
   rpc ListAssets(ListAssetsRequest) returns (ListAssetsResponse);
+  rpc ListAssetsInContainer(ListAssetsInContainerRequest) returns (ListAssetsInContainerResponse);
 }
 
 message CreateAssetRequest {
@@ -37,6 +38,18 @@ message ListAssetsRequest {
 }
 
 message ListAssetsResponse {
+  repeated asset_tracker.asset_common.AssetObject assets = 1;
+  optional string next_token = 2;
+}
+
+message ListAssetsInContainerRequest {
+  uint64 max_items = 1;
+  optional string next_token = 2;
+
+  string container_id = 100;
+}
+
+message ListAssetsInContainerResponse {
   repeated asset_tracker.asset_common.AssetObject assets = 1;
   optional string next_token = 2;
 }

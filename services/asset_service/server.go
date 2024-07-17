@@ -7,12 +7,10 @@ import (
 	"asset-tracker/proto/asset_service"
 	"context"
 	"errors"
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"slices"
 )
 
 type assetServer struct {
@@ -110,34 +108,13 @@ func (s *assetServer) GetAsset(ctx context.Context, request *asset_service.GetAs
 		return nil, status.Error(codes.Internal, MsgInternalServiceError)
 	}
 
-	grpcAssetKind := func() asset_common.AssetKind {
-		switch a.Kind {
-		case asset.KindUnspecified:
-			return asset_common.AssetKind_ASSET_KIND_UNSPECIFIED
-		case asset.KindItem:
-			return asset_common.AssetKind_ASSET_KIND_ITEM
-		case asset.KindContainer:
-			return asset_common.AssetKind_ASSET_KIND_CONTAINER
-		}
-		panic(fmt.Sprintf("unknown asset kind: %v", a.Kind))
-	}
-
-	containerId := func() *string {
-		if slices.Equal(a.ContainerId, asset.RootContainerId()) {
-			return nil
-		}
-
-		v := asset.EncodeIdToString(a.ContainerId)
-		return &v
-	}
-
 	return &asset_service.GetAssetResponse{
 		Asset: &asset_common.AssetObject{
 			Id:          asset.EncodeIdToString(a.Id),
-			ContainerId: containerId(),
+			ContainerId: containerIdToString(a.ContainerId),
 			Name:        a.Name,
 			Description: a.Description,
-			AssetKind:   grpcAssetKind(),
+			AssetKind:   assetKindToGRPC(a.Kind),
 			Attributes:  []*asset_common.AssetAttribute{},
 		},
 	}, nil
@@ -167,8 +144,10 @@ func (s *assetServer) ListAssets(ctx context.Context, request *asset_service.Lis
 	for i, a := range r.Items {
 		assets[i] = &asset_common.AssetObject{
 			Id:          asset.EncodeIdToString(a.Id),
+			ContainerId: containerIdToString(a.ContainerId),
 			Name:        a.Name,
 			Description: a.Description,
+			AssetKind:   assetKindToGRPC(a.Kind),
 			// TODO: Handle attributes.
 			Attributes: nil,
 		}
@@ -180,6 +159,59 @@ func (s *assetServer) ListAssets(ctx context.Context, request *asset_service.Lis
 	}
 
 	return &asset_service.ListAssetsResponse{
+		Assets:    assets,
+		NextToken: outputNextToken,
+	}, nil
+}
+
+func (s *assetServer) ListAssetsInContainer(
+	ctx context.Context,
+	request *asset_service.ListAssetsInContainerRequest,
+) (*asset_service.ListAssetsInContainerResponse, error) {
+	containerID, err := asset.ParseId(request.GetContainerId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "Invalid container ID.")
+	}
+
+	var nextToken string
+	if request.NextToken != nil {
+		nextToken = *request.NextToken
+	}
+
+	r, err := s.AssetManager.ListAssetsInContainer(&asset_manager.ListAssetsInContainerParams{
+		ContainerId:  containerID,
+		MaxItems:     request.MaxItems,
+		NextToken:    nextToken,
+		HasNextToken: request.NextToken != nil,
+	})
+	if err != nil {
+		if errors.Is(err, asset_manager.ErrInvalidNextToken) {
+			return nil, status.Error(codes.InvalidArgument, "Provided nextToken is invalid.")
+		}
+
+		s.Logger.Error("Failed to list assets.", zap.Error(err))
+		return nil, status.Error(codes.Internal, MsgInternalServiceError)
+	}
+
+	assets := make([]*asset_common.AssetObject, len(r.Items))
+	for i, a := range r.Items {
+		assets[i] = &asset_common.AssetObject{
+			Id:          asset.EncodeIdToString(a.Id),
+			ContainerId: containerIdToString(a.ContainerId),
+			Name:        a.Name,
+			Description: a.Description,
+			AssetKind:   assetKindToGRPC(a.Kind),
+			// TODO: Handle attributes.
+			Attributes: nil,
+		}
+	}
+
+	var outputNextToken *string
+	if r.HasNextToken {
+		outputNextToken = proto.String(r.NextToken)
+	}
+
+	return &asset_service.ListAssetsInContainerResponse{
 		Assets:    assets,
 		NextToken: outputNextToken,
 	}, nil

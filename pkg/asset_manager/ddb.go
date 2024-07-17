@@ -18,6 +18,7 @@ import (
 type DynamoDB struct {
 	Client                    *dynamodb.Client
 	TableName                 string
+	ContainerIdIndexName      string
 	NextTokenEncryptionEngine next_token.EncryptionEngine
 	Logger                    *zap.Logger
 }
@@ -99,6 +100,53 @@ func (d *DynamoDB) ListAssets(params *ListAssetsParams) (data pagination.Paginat
 		ExclusiveStartKey: startKey,
 	}
 	output, err := d.Client.Scan(context.TODO(), &i)
+	if err != nil {
+		return pagination.NewEmpty[asset.Asset](), fmt.Errorf("could not scan datastore: %w", err)
+	}
+
+	assets := make([]asset.Asset, len(output.Items))
+	for i, item := range output.Items {
+		if err := attributevalue.UnmarshalMap(item, &assets[i]); err != nil {
+			return pagination.NewEmpty[asset.Asset](), errors.New("deserialization of item failed")
+		}
+	}
+
+	lastKey, isPresent, err := d.encodeLastKey(output.LastEvaluatedKey)
+	if err != nil {
+		return pagination.NewEmpty[asset.Asset](), errors.New("nextToken encoding failed")
+	}
+
+	return pagination.PaginatedData[asset.Asset]{
+		Items:        assets,
+		NextToken:    lastKey,
+		HasNextToken: isPresent,
+	}, nil
+}
+
+func (d *DynamoDB) ListAssetsInContainer(params *ListAssetsInContainerParams) (pagination.PaginatedData[asset.Asset], error) {
+	startKey, err := d.decodeStartKey(params.NextToken, params.HasNextToken)
+	if err != nil {
+		d.Logger.Debug(
+			"Could not parse the received NextToken.",
+			zap.String("NextToken", params.NextToken),
+			zap.Error(err),
+		)
+		return pagination.NewEmpty[asset.Asset](), ErrInvalidNextToken
+	}
+
+	containerIdBytes, _ := params.ContainerId.MarshalBinary()
+	i := dynamodb.QueryInput{
+		TableName:              aws.String(d.TableName),
+		IndexName:              aws.String(d.ContainerIdIndexName),
+		Limit:                  aws.Int32(int32(params.GetMaxItems())),
+		Select:                 "ALL_ATTRIBUTES",
+		ExclusiveStartKey:      startKey,
+		KeyConditionExpression: aws.String("ContainerId = :containerId"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":containerId": &types.AttributeValueMemberB{Value: containerIdBytes},
+		},
+	}
+	output, err := d.Client.Query(context.TODO(), &i)
 	if err != nil {
 		return pagination.NewEmpty[asset.Asset](), fmt.Errorf("could not scan datastore: %w", err)
 	}
