@@ -2,6 +2,7 @@ package server
 
 import (
 	core_asset "asset-tracker/pkg/core/asset"
+	"asset-tracker/proto/asset_common"
 	"asset-tracker/proto/asset_service"
 	"asset-tracker/proto/label_service"
 	"asset-tracker/services/http_proxy/server/proxy_error"
@@ -30,6 +31,49 @@ type asset struct {
 type listAssetsOutput struct {
 	Assets    []asset `json:"assets"`
 	NextToken *string `json:"nextToken,omitempty"`
+}
+
+func (s *ProxyServerImpl) CreateAsset(ctx *gin.Context) {
+	type inputModel struct {
+		ContainerId *string                `json:"containerId"`
+		AssetKind   asset_common.AssetKind `json:"assetKind" binding:"required"`
+		Name        string                 `json:"name" binding:"required,gte=3,lte=16"`
+		Description string                 `json:"description" binding:"required,gte=3,lte=18"`
+	}
+
+	var input inputModel
+	if err := ctx.ShouldBindBodyWithJSON(&input); err != nil {
+		proxy_error.AbortWithErrorResponsef(ctx, proxy_error.BadRequest, "Bad request: %v", err)
+		return
+	}
+
+	r, err := s.AssetService.CreateAsset(ctx, &asset_service.CreateAssetRequest{
+		ContainerId: input.ContainerId,
+		AssetKind:   input.AssetKind,
+		Name:        input.Name,
+		Description: input.Description,
+		Attributes:  nil,
+	})
+	if err != nil {
+		s.Logger.Error("CreateAsset operation failed.", zap.Error(err))
+		proxy_error.AbortWithErrorResponse(ctx, proxy_error.InternalError, "Internal error.")
+		return
+	}
+
+	type outputModel struct {
+		Asset asset `json:"asset"`
+	}
+	ctx.JSON(http.StatusOK, outputModel{
+		Asset: asset{
+			Id:          r.Asset.GetId(),
+			ContainerId: r.Asset.GetContainerId(),
+			AssetKind:   core_asset.Kind(r.Asset.GetAssetKind()),
+			Name:        r.Asset.GetName(),
+			Description: r.Asset.GetDescription(),
+			CreatedAt:   "",
+			ModifiedAt:  "",
+		},
+	})
 }
 
 func (s *ProxyServerImpl) ListAssets(ctx *gin.Context) {

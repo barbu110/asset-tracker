@@ -20,9 +20,9 @@ type assetServer struct {
 
 const (
 	NameLenMin        = 3
-	NameLenMax        = 24
+	NameLenMax        = 16
 	DescriptionLenMin = 3
-	DescriptionLenMax = 24
+	DescriptionLenMax = 18
 )
 
 const (
